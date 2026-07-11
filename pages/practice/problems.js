@@ -152,7 +152,7 @@ function render() {
            style="animation-delay:${reducedMotion ? '0s' : Math.min(i * 0.02, 0.4)}s">
         <div class="pp-card-header">
           <span class="pp-card-title">${escHtml(p.title)}</span>
-          <span class="pp-card-difficulty ${diffClass}">${getDifficultyIcon(p.difficulty)} ${escHtml(p.difficulty)}</span>
+          <span class="pp-card-difficulty ${diffClass}">${escHtml(p.difficulty)}</span>
         </div>
         <span class="pp-card-desc">${escHtml(p.description || '')}</span>
         <div class="pp-card-tags">

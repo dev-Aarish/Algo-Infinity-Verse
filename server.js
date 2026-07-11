@@ -3153,6 +3153,8 @@ function resolveStaticPath(pathname) {
     '/memory-scanner': 'pages/tools/memory-scanner/memory-scanner.html',
     '/memory-scanner.html': 'pages/tools/memory-scanner/memory-scanner.html',
     '/algorithm-timeline': 'pages/visualizers/algorithm-timeline/algorithm-timeline.html',
+    '/practice': 'pages/practice/problems.html',
+    '/practice.html': 'pages/practice/problems.html',
     '/support-page': 'support-page/index.html',
     '/support-page/': 'support-page/index.html',
   };

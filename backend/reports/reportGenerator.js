@@ -12,7 +12,7 @@ async function getBrowser() {
     return browserPromise;
 }
 
-function buildHtmlTemplate(user, data) {
+function buildHtmlTemplate(user, _data) {
     return `
     <!DOCTYPE html>
     <html lang="en">

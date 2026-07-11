@@ -39,12 +39,14 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
       <div class="nav-logo">
-        <span class="logo-text">∞</span>
-        <span class="logo-title">Algo Infinity Verse</span>
+        <a href="/index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+          <span class="logo-text">∞</span>
+          <span class="logo-title">Algo Infinity Verse</span>
+        </a>
       </div>
       <ul class="nav-links" id="navLinks">
         <li class="nav-item">
-          <a href="index.html#home" class="nav-link">Home</a>
+          <a href="/index.html" class="nav-link">Home</a>
         </li>
         <li class="nav-item has-dropdown">
           <button class="nav-link dropdown-toggle" aria-haspopup="menu" aria-expanded="false">
@@ -52,44 +54,33 @@
             <i class="fas fa-chevron-down dropdown-icon"></i>
           </button>
           <div class="dropdown-menu" role="menu">
-            <a href="index.html#topics" class="dropdown-item" role="menuitem">DSA Topics</a>
-            <a href="pages/practice/problems.html" class="dropdown-item" role="menuitem"
-              >Practice Problems</a
-            >
-            <a href="index.html#quiz" class="dropdown-item" role="menuitem">Quizzes</a>
-            <a href="index.html#roadmap" class="dropdown-item" role="menuitem">Learning Roadmap</a>
-            <a
-              href="/pages/ai-features/concept-bridge/concept-bridge.html"
-              class="dropdown-item"
-              role="menuitem"
+            <a href="/index.html#topics" class="dropdown-item" role="menuitem">DSA Topics</a>
+            <a href="/pages/practice/problems.html" class="dropdown-item" role="menuitem">Practice Problems</a>
+            <a href="/index.html#quiz" class="dropdown-item" role="menuitem">Quizzes</a>
+            <a href="/pages/ai-features/concept-bridge/concept-bridge.html" class="dropdown-item" role="menuitem"
               >Concept Bridge Trainer</a
             >
-            <a
-              href="/pages/tools/think-aloud-judge/think-aloud-judge.html"
-              class="dropdown-item"
-              role="menuitem"
+            <a href="/pages/tools/think-aloud-judge/think-aloud-judge.html" class="dropdown-item" role="menuitem"
               >Think-Aloud AI Judge</a
             >
             <a href="intent-detector.html" class="dropdown-item active" role="menuitem"
               >AI Intent Detection</a
             >
-            <a
-              href="/pages/tools/cognitive-load-analyzer/cognitive-load-analyzer.html"
-              class="dropdown-item"
-              role="menuitem"
+            <a href="/pages/tools/cognitive-load-analyzer/cognitive-load-analyzer.html" class="dropdown-item" role="menuitem"
               >Cognitive Load Analyzer</a
             >
           </div>
         </li>
         <li class="nav-item">
-          <a href="pages/practice/problems.html" class="nav-link">Practice</a>
+          <a href="/pages/practice/problems.html" class="nav-link">
+            <i class="fas fa-puzzle-piece"></i> Practice
+          </a>
         </li>
       </ul>
-      <div class="nav-actions">
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <i class="fas fa-moon"></i>
+      <div class="nav-buttons">
+        <button type="button" id="menuToggle" class="menu-toggle" aria-label="Toggle navigation menu">
+          <i class="fas fa-bars"></i>
         </button>
-        <a href="index.html" class="btn btn-primary"> <i class="fas fa-home"></i> Home </a>
       </div>
     </nav>
 

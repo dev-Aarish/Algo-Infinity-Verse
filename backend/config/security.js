@@ -20,6 +20,6 @@ export default {
     lowercase: /[a-z]/,
     uppercase: /[A-Z]/,
     digit: /\d/,
-    special: /[!@#$%^&*()_+\-=\[\]{};:'"|,.<>?/~`]/
+    special: /[!@#$%^&*()_+\-=[\]{};:'"|,.<>?/~`]/
   }
 };
