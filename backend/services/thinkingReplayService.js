@@ -2,31 +2,33 @@ const OpenAI = require('openai');
 
 class ThinkingReplayService {
   constructor() {
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('OPENAI_API_KEY is missing from environment variables.');
-      throw new Error('OPENAI_API_KEY is required. Please set it in .env file.');
-    }
-
     this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: process.env.OPENAI_API_KEY,
     });
   }
 
   async generateReplay(snapshots, events, submissions) {
     try {
+      // 1. Prepare data for AI
       const analysisData = this.prepareAnalysisData(snapshots, events, submissions);
+
+      // 2. Generate prompt for AI
       const prompt = this.buildPrompt(analysisData);
+
+      // 3. Call LLM
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",
+        model: 'gpt-4-turbo-preview',
         messages: [
-          { role: "system", content: "You are an expert analyzing problem-solving strategies." },
-          { role: "user", content: prompt }
+          { role: 'system', content: 'You are an expert analyzing problem-solving strategies.' },
+          { role: 'user', content: prompt },
         ],
         temperature: 0.3,
-        max_tokens: 2000
+        max_tokens: 2000,
       });
 
+      // 4. Parse response
       const replay = this.parseResponse(response.choices[0].message.content);
+
       return replay;
     } catch (error) {
       console.error('AI Replay generation failed:', error);
@@ -36,22 +38,22 @@ class ThinkingReplayService {
 
   prepareAnalysisData(snapshots, events, submissions) {
     return {
-      snapshots: snapshots.map(s => ({
+      snapshots: snapshots.map((s) => ({
         timestamp: s.timestamp,
         code: s.code,
         status: s.status,
         executionTime: s.execution_time,
-        errors: s.errors
+        errors: s.errors,
       })),
-      events: events.map(e => ({
+      events: events.map((e) => ({
         type: e.type,
-        timestamp: e.timestamp
+        timestamp: e.timestamp,
       })),
-      submissions: submissions.map(s => ({
+      submissions: submissions.map((s) => ({
         status: s.status,
         timestamp: s.timestamp,
-        results: s.results
-      }))
+        results: s.results,
+      })),
     };
   }
 
@@ -60,13 +62,17 @@ class ThinkingReplayService {
 Analyze this coding session and reconstruct the thinking process.
 
 Snapshots (chronological):
-${data.snapshots.map((s, i) => `
-Step ${i+1} [${s.timestamp}]:
+${data.snapshots
+  .map(
+    (s, i) => `
+Step ${i + 1} [${s.timestamp}]:
 Status: ${s.status}
 Code: ${s.code.substring(0, 200)}${s.code.length > 200 ? '...' : ''}
 ${s.errors ? `Errors: ${s.errors}` : ''}
 Execution Time: ${s.executionTime || 'N/A'}ms
-`).join('\n')}
+`
+  )
+  .join('\n')}
 
 Editor Events: ${data.events.length} events tracked
 Submissions: ${data.submissions.length} submissions
@@ -124,21 +130,21 @@ Generate response as JSON:
         strategy: i === 0 ? 'Initial Approach' : 'Continued Work',
         reasoning: i === 0 ? 'Started solving the problem' : 'Refined solution',
         code: s.code?.substring(0, 50) || '',
-        performance: { time: 'O(n)', space: 'O(1)' }
+        performance: { time: 'O(n)', space: 'O(1)' },
       })),
       reasoningSummary: 'User worked on the problem and made progress.',
       strategyComparison: {
         from: 'Initial',
         to: 'Final',
-        improvement: 'Improved solution'
+        improvement: 'Improved solution',
       },
       performanceAnalysis: {
         optimizations: ['Code improvements'],
         suggestions: ['Review alternative approaches'],
         timeComplexity: 'O(n)',
-        spaceComplexity: 'O(1)'
+        spaceComplexity: 'O(1)',
       },
-      strategyTags: ['initial', 'final']
+      strategyTags: ['initial', 'final'],
     };
   }
 }

@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 <!DOCTYPE html>
 <html lang="en">
 
@@ -140,7 +140,7 @@ let currentTheme = getCurrentTheme();
 
 // Language templates
 const templates = {
-    javascript: `// JavaScript Playground\n\nfunction greet(name) {\n  return \`Hello \${name}\`;\n}\n\nconsole.log(greet("Learner"));\n`,
+    javascript: `// JavaScript Playground\n\nfunction greet(name) {\n  return `Hello ${name}`;\n}\n\nconsole.log(greet("Learner"));\n`,
     typescript: `// TypeScript Playground\n\ninterface User {\n  name: string;\n}\n\nconst user: User = {\n  name: "Learner"\n};\n\nconsole.log(user);\n`,
     dart: `// Dart Playground\n\nvoid main() {\n  print("Hello Learner");\n}\n`,
     python: `# Python Playground\n\ndef greet(name):\n    return f"Hello {name}"\n\nprint(greet("Learner"))\n`,

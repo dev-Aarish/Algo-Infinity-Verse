@@ -742,5 +742,29 @@
     "stack": "Promise Rejection:0:0",
     "url": "http://127.0.0.1:3000/pages/learning/intermediate-roadmap/intermediate-roadmap.html",
     "timestamp": "2026-07-10T15:23:30.787Z"
+  },
+  {
+    "message": "The requested version (1) is less than the existing version (3).",
+    "stack": "Promise Rejection:0:0",
+    "url": "http://127.0.0.1:3000/pages/tools/personalized-learning-path/personalized-learning-path.html",
+    "timestamp": "2026-07-10T16:15:30.877Z"
+  },
+  {
+    "message": "The requested version (1) is less than the existing version (3).",
+    "stack": "Promise Rejection:0:0",
+    "url": "http://127.0.0.1:3000/pages/tools/personalized-learning-path/personalized-learning-path.html",
+    "timestamp": "2026-07-10T16:15:38.323Z"
+  },
+  {
+    "message": "The requested version (1) is less than the existing version (3).",
+    "stack": "Promise Rejection:0:0",
+    "url": "http://127.0.0.1:3000/pages/ai-features/fail-academy/fail-academy.html",
+    "timestamp": "2026-07-10T20:05:10.597Z"
+  },
+  {
+    "message": "The requested version (1) is less than the existing version (3).",
+    "stack": "Promise Rejection:0:0",
+    "url": "http://127.0.0.1:3000/pages/ai-features/fail-academy/fail-academy.html",
+    "timestamp": "2026-07-10T22:24:33.494Z"
   }
 ]
