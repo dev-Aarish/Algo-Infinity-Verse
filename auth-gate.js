@@ -38,12 +38,18 @@
     if (loginBtn) loginBtn.href = `${authUrl("/login")}?next=${next}`;
     if (signupBtn) signupBtn.href = `${authUrl("/signup")}?next=${next}`;
 
-    // Re-trigger the slide-in animation every open
+    // Re-trigger entrance animations every open
     const content = modal.querySelector(".auth-gate-modal-content");
+    const iconRing = modal.querySelector(".auth-gate-icon-ring");
     if (content) {
       content.style.animation = "none";
       void content.offsetWidth;
       content.style.animation = "";
+    }
+    if (iconRing) {
+      iconRing.style.animation = "none";
+      void iconRing.offsetWidth;
+      iconRing.style.animation = "";
     }
 
     modal.classList.add("active");

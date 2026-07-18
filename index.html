@@ -893,8 +893,8 @@
           &times;
         </button>
         <div class="auth-gate-icon">
-          <div class="auth-gate-lock-ring">
-            <i class="fas fa-lock"></i>
+          <div class="auth-gate-icon-ring">
+            <span class="auth-gate-infinity">∞</span>
           </div>
         </div>
         <h2 class="auth-gate-title" id="authGateTitle">Sign in to track progress</h2>
@@ -903,21 +903,28 @@
         </p>
         <div class="auth-gate-perks">
           <div class="auth-gate-perk">
-            <i class="fas fa-chart-line"></i> Track your progress &amp; streaks
+            <span class="perk-badge perk-badge--progress"><i class="fas fa-chart-line"></i></span>
+            Track your progress &amp; streaks
           </div>
           <div class="auth-gate-perk">
-            <i class="fas fa-trophy"></i> Earn XP &amp; unlock badges
+            <span class="perk-badge perk-badge--xp"><i class="fas fa-trophy"></i></span>
+            Earn XP &amp; unlock badges
           </div>
-          <div class="auth-gate-perk"><i class="fas fa-users"></i> Join the leaderboard</div>
+          <div class="auth-gate-perk">
+            <span class="perk-badge perk-badge--leaderboard"><i class="fas fa-users"></i></span>
+            Join the leaderboard
+          </div>
         </div>
         <div class="auth-gate-actions">
-          <a href="login.html" id="authGateLoginBtn" class="btn btn-primary auth-gate-btn">
-            <i class="fas fa-sign-in-alt"></i> Login
-          </a>
-          <a href="signup.html" id="authGateSignupBtn" class="btn btn-secondary auth-gate-btn">
-            <i class="fas fa-user-plus"></i> Sign Up Free
-          </a>
-          <button type="button" id="authGateGuestBtn" class="btn btn-secondary auth-gate-btn">
+          <div class="auth-gate-actions__main">
+            <a href="login.html" id="authGateLoginBtn" class="auth-gate-btn auth-gate-btn--outline">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="signup.html" id="authGateSignupBtn" class="auth-gate-btn auth-gate-btn--primary">
+              <i class="fas fa-user-plus"></i> Sign Up
+            </a>
+          </div>
+          <button type="button" id="authGateGuestBtn" class="auth-gate-btn auth-gate-btn--ghost">
             <i class="fas fa-user-astronaut"></i> Continue as Guest
           </button>
         </div>
