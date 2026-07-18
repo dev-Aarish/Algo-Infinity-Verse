@@ -134,6 +134,11 @@ function initializeApp() {
   initPersonalityQuiz();
   initRevisionDuePopup();
   initStoreModal();
+
+  // Ensure page is at top after all modules initialize
+  if (window.scrollY !== 0) {
+    window.scrollTo(0, 0);
+  }
 }
 
 if (window.partialsLoadedFlag) {

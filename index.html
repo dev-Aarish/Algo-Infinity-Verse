@@ -336,6 +336,11 @@
         var tagline = document.querySelector('.tagline');
         if (!path || !typed) return;
 
+        // Lock scroll while the loading screen is visible
+        document.documentElement.style.scrollBehavior = 'auto';
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+
         // Typewriter
         var tInterval;
         (function() {
@@ -357,6 +362,13 @@
         var tl = gsap.timeline({
           onComplete: function() {
             if (tInterval) { clearInterval(tInterval); tInterval = null; }
+            // Unlock scroll first, then scroll to top — scrollTo doesn't work
+            // while overflow is hidden
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+            document.documentElement.style.scrollBehavior = 'auto';
+            window.scrollTo(0, 0);
+            document.documentElement.style.scrollBehavior = '';
             ls.style.display = 'none';
           }
         });

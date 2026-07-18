@@ -73,6 +73,11 @@ export function initLoadingScreen() {
     return;
   }
 
+  // Lock scroll while the loading screen is visible
+  document.documentElement.style.scrollBehavior = 'auto';
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+
   // Ensure loading screen starts visible
   loadingScreen.style.opacity = '1';
   loadingScreen.style.visibility = 'visible';
@@ -85,6 +90,12 @@ export function initLoadingScreen() {
         clearInterval(typewriterInterval);
         typewriterInterval = null;
       }
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, 0);
+      document.documentElement.style.scrollBehavior = '';
+
       loadingScreen.classList.add('hidden');
       loadingScreen.classList.remove('animating');
       setTimeout(() => {
