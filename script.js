@@ -2147,6 +2147,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // New Topic Quiz Modal close handlers
+  // Topic quiz modal is now a full page at /pages/topic-quiz/topic-quiz.html
+  // Legacy modal listeners removed.
 });
 
 // ===== LOADING SCREEN =====

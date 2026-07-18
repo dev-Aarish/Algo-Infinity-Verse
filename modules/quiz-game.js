@@ -66,6 +66,11 @@ function updateQuizProgressDisplay(topic) {
   attemptsEl.textContent = quizData.attempts;
 }
 
+/**
+ * Start a topic quiz. On the main index page this navigates to the
+ * dedicated full-page quiz experience. On the quiz page itself the
+ * modal-equivalent flow is handled by pages/topic-quiz/topic-quiz.js.
+ */
 function startQuiz(topic) {
   const quizQuestions = window.quizQuestions || {};
   const topicKey = getQuizTopicKey(topic);
@@ -75,29 +80,14 @@ function startQuiz(topic) {
       showNotification('No quiz questions available!', 'error');
     return;
   }
-  const resultEl = document.getElementById('topicQuizResult');
-  if (resultEl) {
-    resultEl.classList.add('hidden');
-    resultEl.innerHTML = '';
-  }
-  const qText = document.getElementById('topicQuizQuestionText');
-  if (qText) qText.style.display = 'block';
-  const qOpts = document.getElementById('topicQuizOptions');
-  if (qOpts) qOpts.style.display = 'block';
-  const qProg = document.getElementById('topicQuizProgress');
-  if (qProg) qProg.style.display = 'block';
-  const qCount = document.getElementById('topicQuizCounter');
-  if (qCount) qCount.style.display = 'block';
-  currentQuiz = {
-    topic: topicKey,
-    questions: shuffleArray([...questions]),
-    currentQuestionIndex: 0,
-    score: 0,
-    answers: [],
-  };
-  openQuizModal();
-  startQuizTimer(topicKey);
-  renderQuizQuestion();
+
+  // Store topic for the full-page quiz and navigate
+  try {
+    sessionStorage.setItem('topicQuizTopic', topicKey);
+  } catch (e) { /* ignore */ }
+
+  // Navigate to the dedicated full-page quiz
+  window.location.href = '/pages/topic-quiz/topic-quiz.html?topic=' + encodeURIComponent(topicKey);
 }
 
 function startQuizTimer(topicKey) {
@@ -403,4 +393,4 @@ if (typeof window !== 'undefined') {
   window.startQuiz = startQuiz;
 }
 
-export { initQuizSection, closeQuizModal, startQuiz, shuffleArray, formatQuizTime, getNextOptionIndex };
+export { initQuizSection, closeQuizModal, startQuiz, shuffleArray, formatQuizTime, getNextOptionIndex, getQuizTopicKey };
