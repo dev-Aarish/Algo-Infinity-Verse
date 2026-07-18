@@ -2360,16 +2360,26 @@ html.light-mode .recent-item.selected {
     display: flex;
   }
 
+  .nav-settings-dropdown:not(.open) .settings-dropdown-menu {
+    display: none;
+  }
+
+  .nav-settings-dropdown.open .settings-dropdown-menu {
+    display: block;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
   .settings-dropdown-menu {
     left: auto !important;
     right: 0.5rem !important;
     position: fixed !important;
     top: auto !important;
     max-width: calc(100vw - 32px) !important;
-    max-height: 70vh !important;
-    overflow-y: auto !important;
     transform: none !important;
     width: 300px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .dropdown-group-label {

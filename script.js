@@ -2301,6 +2301,7 @@ function initNavbar() {
       if (navLinks.classList.contains('active')) {
         toggleMenu(false);
       }
+    } else {
       document.querySelectorAll('.has-dropdown.open').forEach((el) => {
         el.classList.remove('open');
       });
