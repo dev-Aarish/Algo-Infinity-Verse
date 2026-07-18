@@ -73,6 +73,9 @@ export function initLoadingScreen() {
     return;
   }
 
+  // Prevent browser scroll restoration from fighting with our scrollTo(0,0)
+  try { history.scrollRestoration = 'manual'; } catch(e) {}
+
   // Lock scroll while the loading screen is visible
   document.documentElement.style.scrollBehavior = 'auto';
   document.documentElement.style.overflow = 'hidden';
@@ -95,6 +98,8 @@ export function initLoadingScreen() {
       document.documentElement.style.scrollBehavior = 'auto';
       window.scrollTo(0, 0);
       document.documentElement.style.scrollBehavior = '';
+      // Re-enable normal scroll restoration after we've set the position
+      try { history.scrollRestoration = 'auto'; } catch(e) {}
 
       loadingScreen.classList.add('hidden');
       loadingScreen.classList.remove('animating');

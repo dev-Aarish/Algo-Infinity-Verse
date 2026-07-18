@@ -1201,7 +1201,7 @@ function renderLesson() {
     const lesson = getActiveLesson();
     const isComplete = isItemComplete(lesson.id);
 
-    DOM.lessonContent.innerHTML = (window.eli5Toggle ? window.eli5Toggle.wrapContent(lesson.content, '') : lesson.content);
+    DOM.lessonContent.innerHTML = (window.eli5Toggle ? window.eli5Toggle.wrapContent(lesson.content, (window.eli5RustData || {})[lesson.id] || '') : lesson.content);
   if (window.eli5Toggle) {
     window.eli5Toggle.initToggle('rust', DOM.lessonContent);
   }
