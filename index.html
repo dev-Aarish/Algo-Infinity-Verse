@@ -321,6 +321,8 @@
     <script>
       (function() {
         if (window.__loadingStarted) return;
+        // Prevent browser scroll restoration from fighting with our scrollTo(0,0)
+        try { history.scrollRestoration = 'manual'; } catch(e) {}
         var ls = document.getElementById('loading-screen');
         if (!ls || typeof gsap === 'undefined') return;
         if (
@@ -369,6 +371,8 @@
             document.documentElement.style.scrollBehavior = 'auto';
             window.scrollTo(0, 0);
             document.documentElement.style.scrollBehavior = '';
+            // Re-enable normal scroll restoration after we've set the position
+            try { history.scrollRestoration = 'auto'; } catch(e) {}
             ls.style.display = 'none';
           }
         });
