@@ -162,7 +162,7 @@
     }
   }
 
-  const TRANSITION_DURATION = 600;
+  const TRANSITION_DURATION = 800;
 
   function toggleTheme() {
     const isLight = document.documentElement.classList.contains('light-mode');
@@ -199,6 +199,34 @@
       syncNavbar();
     }
 
+    /* ── Overlay fallback (used when View Transition API unavailable or throws) ── */
+    function runOverlayAnimation() {
+      const newColor = newThemeIsLight ? '#ffffff' : '#0a0a1a';
+
+      var overlay = document.createElement('div');
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.style.cssText =
+        'position:fixed;top:0;left:0;width:100%;height:100%;' +
+        'z-index:99999;pointer-events:none;' +
+        'background:' + newColor + ';' +
+        'will-change:clip-path;' +
+        'clip-path:circle(0px at ' + cx + 'px ' + cy + 'px);' +
+        'transition:clip-path ' + TRANSITION_DURATION + 'ms cubic-bezier(0.16,1,0.3,1);';
+      document.body.appendChild(overlay);
+
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          overlay.style.clipPath =
+            'circle(' + maxRadius + 'px at ' + cx + 'px ' + cy + 'px)';
+        });
+      });
+
+      setTimeout(function () {
+        applyTheme();
+        overlay.remove();
+      }, TRANSITION_DURATION + 50);
+    }
+
     /* ── View Transition API: outward ripple from click point ── */
     if (document.startViewTransition) {
       document.documentElement.style.setProperty('--ripple-x', cx + 'px');
@@ -219,40 +247,20 @@
           document.documentElement.style.removeProperty('--ripple-y');
           document.documentElement.style.removeProperty('--ripple-max-r');
         });
+        return; /* View Transition started successfully — CSS pseudo-elements handle the animation */
       } catch (__ignore__) {
-        /* transition already in progress — apply immediately */
-        applyTheme();
+        /* transition already in progress — clean CSS vars, use overlay fallback below */
+        document.documentElement.style.removeProperty('--ripple-x');
+        document.documentElement.style.removeProperty('--ripple-y');
+        document.documentElement.style.removeProperty('--ripple-max-r');
+        /* fall through to overlay approach */
       }
+      runOverlayAnimation();
       return;
     }
 
-    /* ── Legacy overlay fallback ── */
-    const oldColor = isLight ? '#ffffff' : '#0a0a1a';
-    applyTheme();
-
-    /* overlay = OLD theme color, masks the new theme while it exists */
-    var overlay = document.createElement('div');
-    overlay.setAttribute('aria-hidden', 'true');
-    overlay.style.cssText =
-      'position:fixed;top:0;left:0;width:100%;height:100%;' +
-      'z-index:99999;pointer-events:none;' +
-      'background:' + oldColor + ';' +
-      'will-change:clip-path;' +
-      'clip-path:circle(' + maxRadius + 'px at ' + cx + 'px ' + cy + 'px);' +
-      'transition:clip-path ' + TRANSITION_DURATION + 'ms cubic-bezier(0.16,1,0.3,1);';
-    document.body.appendChild(overlay);
-
-    /* old theme peels away — new theme revealed from edges inward */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        overlay.style.clipPath =
-          'circle(0px at ' + cx + 'px ' + cy + 'px)';
-      });
-    });
-
-    setTimeout(function () {
-      overlay.remove();
-    }, TRANSITION_DURATION);
+    /* if we reach here, no View Transition API — use overlay */
+    runOverlayAnimation();
   }
 
   function initTheme() {
