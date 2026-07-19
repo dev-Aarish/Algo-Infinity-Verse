@@ -1985,7 +1985,7 @@ const db = {
   posts: [
     { _id: 'p1', title: 'First Post', content: 'Hello!', author: 'u1' },
     { _id: 'p2', title: 'Second Post', content: 'World!', author: 'u1' },
-    { _id: 'p3', title: 'Bob\'s Post', content: 'By Bob', author: 'u2' },
+    { _id: 'p3', title: "Bob's Post", content: 'By Bob', author: 'u2' },
   ],
 };
 
