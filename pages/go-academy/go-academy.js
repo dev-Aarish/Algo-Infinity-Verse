@@ -1111,6 +1111,7 @@ function renderLesson() {
     window.eli5Toggle.initToggle('go', DOM.lessonContent);
   }
 
+  copyCode.init(DOM.lessonContent);
     DOM.markCompleteBtn.innerHTML = isComplete
         ? '<i class="fas fa-check-circle mr-2"></i> Completed'
         : '<i class="fas fa-check-circle mr-2"></i> Mark as Complete';

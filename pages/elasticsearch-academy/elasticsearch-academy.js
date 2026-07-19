@@ -318,6 +318,7 @@ function loadLesson(mIndex, lIndex) {
     window.eli5Toggle.initToggle('elasticsearch', elements.lessonContent);
   }
   elements.esEditor.value = lesson.defaultCode || '';
+  copyCode.init(elements.lessonContent);
   elements.jsonResults.innerHTML =
     '<span class="text-gray-500 italic">Click Play to run the request...</span>';
   elements.esStatus.textContent = '';

@@ -1034,6 +1034,7 @@ class RedisAcademy {
       eli5.initToggle('redis', this.dom.lessonBody);
     }
 
+    copyCode.init(this.dom.lessonBody);
     const id = lesson.id;
     const done = this.completedLessons.has(id);
     this.dom.btnComplete.disabled = done;

@@ -265,6 +265,7 @@ function renderLesson(lesson) {
     window.eli5Toggle.initToggle('bootstrap', DOM.tabLesson);
   }
 
+ copyCode.init(DOM.tabLesson);
   const nextBtn = document.getElementById('next-lesson-btn');
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {

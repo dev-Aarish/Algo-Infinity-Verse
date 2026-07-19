@@ -1426,6 +1426,7 @@ function renderLesson(lesson) {
         eli5.initToggle('angular', lessonContainer);
     }
 
+ copyCode.init(lessonContainer);
     /* Navigation + complete buttons */
     if (hasPrev) {
         document.getElementById('prev-lesson').addEventListener('click', () => {

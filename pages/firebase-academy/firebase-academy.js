@@ -364,6 +364,7 @@ function loadLesson(mIndex, lIndex) {
     window.eli5Toggle.initToggle('firebase', elements.lessonContent);
   }
   elements.firebaseEditor.value = lesson.defaultCode || '';
+  copyCode.init(elements.lessonContent);
 
   // Clear editor console
   elements.editorConsole.innerHTML = '';

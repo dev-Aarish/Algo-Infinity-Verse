@@ -226,6 +226,7 @@ function renderLesson(lesson) {
     window.eli5Toggle.initToggle('mui', DOM.tabLesson);
   }
 
+ copyCode.init(DOM.tabLesson);
   const btn = document.getElementById('mark-lesson-complete');
   if (!isCompleted) {
     btn.addEventListener('click', () => {

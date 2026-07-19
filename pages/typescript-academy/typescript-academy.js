@@ -1309,7 +1309,7 @@ function renderLesson(lesson) {
         <div class="max-w-3xl mx-auto animate-fade-in">
             <h2 class="text-3xl font-bold text-gray-900 mb-6" style="font-family: 'DM Sans', sans-serif; letter-spacing: -0.02em;">${lesson.title}</h2>
             <div class="prose max-w-none text-gray-800">
-                ${(window.eli5Toggle ? window.eli5Toggle.wrapContent(lesson.content, '') : lesson.content)}
+                ${(window.eli5Toggle ? window.eli5Toggle.wrapContent(lesson.content, window.eli5TsData && window.eli5TsData[lesson.id]) : lesson.content)}
             </div>
 
             <div class="mt-12 pt-6 border-t border-gray-200 flex justify-end">
@@ -1325,6 +1325,7 @@ function renderLesson(lesson) {
     window.eli5Toggle.initToggle('typescript', DOM.tabLesson);
   }
     const btn = document.getElementById('mark-lesson-complete');
+    copyCode.init(DOM.tabLesson);
     if (!isCompleted) {
         btn.addEventListener('click', () => {
             markItemComplete(lesson.id);

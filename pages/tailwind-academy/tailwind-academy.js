@@ -680,6 +680,7 @@ function renderLesson(lesson) {
     window.eli5Toggle.initToggle('tailwind', DOM.tabLesson.firstElementChild);
   }
     const btn = document.getElementById('mark-lesson-complete');
+    copyCode.init(DOM.tabLesson.firstElementChild);
     if (!isCompleted) {
         btn.addEventListener('click', () => {
             markItemComplete(lesson.id);
