@@ -80,18 +80,6 @@ toggles.forEach(toggle => {
 
 });
 
-// Delete Account Button
-const deleteBtn = document.getElementById("deleteAccountBtn");
-
-if (deleteBtn) {
-    deleteBtn.addEventListener("click", function () {
-        const confirmDelete = false /* confirm removed */;
-
-        if (confirmDelete) {
-            alert("Account deletion is handled server-side. Please contact support to complete this action.");
-            
-        }
-    });
-}
+// Delete Account — handled globally by auth.js wireDeleteAccount()
 
     

@@ -21,22 +21,45 @@
   const loginBtn = document.getElementById("authGateLoginBtn");
   const signupBtn = document.getElementById("authGateSignupBtn");
   const subtitle = document.getElementById("authGateSubtitle");
+  const titleEl = document.getElementById("authGateTitle");
 
-  function openAuthGate(customMessage) {
+  function resetAuthGate() {
+    if (!modal) return;
+    modal.classList.remove("auth-gate--login-mode");
+    if (loginBtn) {
+      loginBtn.classList.remove("auth-gate-btn--primary");
+      loginBtn.classList.add("auth-gate-btn--outline");
+    }
+    if (titleEl) titleEl.textContent = "Sign in to track progress";
+    if (subtitle) subtitle.textContent = "Continue as guest to explore, or sign in to save your progress.";
+  }
+
+  function openAuthGate(customMessage, mode) {
     if (!modal) return;
 
-    // Update subtitle text if a context-specific message is provided
+    resetAuthGate();
+
+    if (mode === "login") {
+      if (titleEl) titleEl.textContent = "Sign in to continue";
+    }
+
     if (subtitle && customMessage) {
       subtitle.textContent = customMessage;
-      } else if (subtitle) {
-        subtitle.textContent =
-          "Continue as guest to explore, or sign in to save your progress.";
       }
 
     // Build ?next= param so user lands back here after login
     const next = encodeURIComponent(currentPageUrl());
     if (loginBtn) loginBtn.href = `${authUrl("/login")}?next=${next}`;
     if (signupBtn) signupBtn.href = `${authUrl("/signup")}?next=${next}`;
+
+    // Apply login-only mode: hide signup/guest/perks, style login as primary
+    if (mode === "login") {
+      modal.classList.add("auth-gate--login-mode");
+      if (loginBtn) {
+        loginBtn.classList.remove("auth-gate-btn--outline");
+        loginBtn.classList.add("auth-gate-btn--primary");
+      }
+    }
 
     // Re-trigger entrance animations every open
     const content = modal.querySelector(".auth-gate-modal-content");
@@ -58,6 +81,7 @@
 
   function closeAuthGate() {
     if (!modal) return;
+    resetAuthGate();
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
   }
