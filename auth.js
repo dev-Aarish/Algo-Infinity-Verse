@@ -737,7 +737,7 @@ function passwordStrength(password) {
 function wireChangePassword() {
   // ── Toggle password visibility (delegated — works even when partial loads late) ──
   document.addEventListener('click', (e) => {
-    const toggle = e.target.closest('.cpw-toggle');
+    const toggle = e.target.closest('.cpw-toggle, .password-toggle');
     if (!toggle) return;
     const input = document.getElementById(toggle.dataset.target);
     if (!input) return;
@@ -746,6 +746,10 @@ function wireChangePassword() {
     toggle.innerHTML = wasPassword
       ? '<i class="fas fa-eye-slash"></i>'
       : '<i class="fas fa-eye"></i>';
+    if (toggle.classList.contains('password-toggle')) {
+      toggle.setAttribute('aria-pressed', String(wasPassword));
+      toggle.setAttribute('aria-label', wasPassword ? 'Hide password' : 'Show password');
+    }
   });
 
   // ── DOM refs ──
