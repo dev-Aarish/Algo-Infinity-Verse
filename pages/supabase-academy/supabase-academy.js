@@ -327,6 +327,7 @@ function loadLesson(mIndex, lIndex) {
     window.eli5Toggle.initToggle('supabase', elements.lessonContent);
   }
   elements.supabaseEditor.value = lesson.defaultCode || '';
+  copyCode.init(elements.lessonContent);
 
   elements.editorConsole.innerHTML = '';
   elements.editorConsole.classList.add('hidden');

@@ -435,6 +435,8 @@ class CassandraHub {
         
         this.lessonTitle.textContent = mod.title;
         this.lessonBody.innerHTML = mod.content;
+
+        copyCode.init(this.lessonBody);
         
         if (this.completedModules.has(id)) {
             this.btnComplete.disabled = true;

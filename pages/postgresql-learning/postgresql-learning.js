@@ -294,6 +294,7 @@ function loadLesson(mIndex, lIndex) {
     window.eli5Toggle.initToggle('postgresql', elements.lessonContent);
   }
 
+ copyCode.init(elements.lessonContent);
   // Set default code in simulator
   elements.sqlEditor.value = lesson.defaultCode;
 

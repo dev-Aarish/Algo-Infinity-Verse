@@ -2571,6 +2571,7 @@ function renderLesson(lesson) {
     }
   }
 
+ copyCode.init(lessonContainer);
   /* Re-bind lesson nav buttons since innerHTML replaced them */
   const prevBtn = document.getElementById('lesson-nav-prev');
   const nextBtn = document.getElementById('lesson-nav-next');

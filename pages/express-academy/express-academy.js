@@ -409,6 +409,7 @@ function renderLesson(lesson) {
     window.eli5Toggle.initToggle('express', DOM.tabLesson);
   }
   const btn = document.getElementById('mark-lesson-complete');
+   copyCode.init(DOM.tabLesson);
   if (!isCompleted) {
     btn.addEventListener('click', () => {
       markItemComplete(lesson.id);

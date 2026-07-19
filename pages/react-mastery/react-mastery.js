@@ -2034,6 +2034,7 @@ function renderLesson(lesson) {
     window.eli5Toggle.initToggle('react', DOM.tabLesson);
   }
 
+ copyCode.init(DOM.tabLesson);
   // Wire up buttons
   const markBtn = document.getElementById('mark-lesson-complete');
   if (!isCompleted && markBtn) {

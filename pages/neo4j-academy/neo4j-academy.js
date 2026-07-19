@@ -287,6 +287,7 @@ function loadLesson(mIndex, lIndex) {
     window.eli5Toggle.initToggle('neo4j', elements.lessonContent);
   }
   elements.cypherEditor.value = lesson.defaultCode || '';
+  copyCode.init(elements.lessonContent);
   elements.jsonResults.innerHTML =
     '<span class="text-gray-400 italic">Run a query to see results...</span>';
 

@@ -435,6 +435,7 @@ function renderLesson(lesson) {
     eli5.initToggle('nextjs', lessonContainer);
   }
 
+ copyCode.init(lessonContainer);
   const btn = document.getElementById('mark-lesson-complete');
   if (!isCompleted) {
     btn.addEventListener('click', () => {

@@ -157,6 +157,7 @@ function loadLesson(index) {
     window.eli5Toggle.initToggle('docker-k8s', lessonBody);
   }
 
+  copyCode.init(lessonBody);
   prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
   nextBtn.style.visibility = index === curriculum.length - 1 ? 'hidden' : 'visible';
 

@@ -298,6 +298,7 @@ function loadLesson(mIndex, lIndex) {
     eli5.initToggle('aws', elements.lessonContent);
   }
 
+ copyCode.init(elements.lessonContent);
   renderQuiz(mIndex);
   renderSidebar();
 

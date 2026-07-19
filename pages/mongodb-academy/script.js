@@ -292,6 +292,7 @@ function loadLesson(mIndex, lIndex) {
     window.eli5Toggle.initToggle('mongodb', elements.lessonContent);
   }
 
+  copyCode.init(elements.lessonContent);
   // Set simulator default code
   elements.mongoEditor.value = lesson.defaultCode || '';
 

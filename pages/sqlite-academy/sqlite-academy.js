@@ -341,6 +341,7 @@ function loadLesson(mIndex, lIndex) {
     window.eli5Toggle.initToggle('sqlite', elements.lessonContent);
   }
   elements.sqlEditor.value = lesson.defaultCode || '';
+  copyCode.init(elements.lessonContent);
 
   renderQuiz(mIndex);
   renderSidebar();
