@@ -310,8 +310,64 @@ export class LoggingInterceptor implements NestInterceptor {
         ]
     },
     {
+        id: "exceptions",
+        title: "8. Exception Filters & Error Handling",
+        lessons: [
+            {
+                id: "exceptions-1",
+                title: "Exception Filters & Error Handling",
+                content: `
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Handling Errors Gracefully</h3>
+                    <p class="mb-4 text-gray-700 leading-relaxed">NestJS comes with a built-in **Exceptions Layer** that catches unhandled exceptions and returns appropriate HTTP responses. By default, any exception thrown in a route handler is caught and turned into a <code>500 Internal Server Error</code> response.</p>
+                    <p class="mb-4 text-gray-700 leading-relaxed">You can throw standard HTTP exceptions using <code>HttpException</code> or its shorthand subclasses like <code>NotFoundException</code>, <code>BadRequestException</code>, and <code>UnauthorizedException</code>. These automatically map to the correct HTTP status code.</p>
+                    <p class="mb-4 text-gray-700 leading-relaxed">For custom error handling logic, create an **Exception Filter** by implementing the <code>ExceptionFilter</code> interface. The filter receives the exception object and the execution context, letting you format the error response, log errors, or add custom headers before sending the response back to the client.</p>
+                `,
+                defaultCode: `import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Controller, Get, Param } from '@nestjs/common';
+import { Response } from 'express';
+
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const status = exception.getStatus();
+    const message = exception.getResponse();
+
+    response
+      .status(status)
+      .json({
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        message: typeof message === 'string' ? message : (message as any).message,
+      });
+  }
+}
+
+@Controller('items')
+@UseFilters(HttpExceptionFilter)
+export class ItemsController {
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    if (id === '0') {
+      throw new NotFoundException('Item not found');
+    }
+    return { id, name: 'Sample Item' };
+  }
+}`
+            }
+        ],
+        quiz: [
+            {
+                id: "q-except-1",
+                question: "Which interface must a class implement to create a custom Exception Filter in NestJS?",
+                options: ["ErrorHandler", "ExceptionFilter", "CatchException", "FilterHandler"],
+                correct: 1
+            }
+        ]
+    },
+    {
         id: "database",
-        title: "8. Database Integration (ORM)",
+        title: "9. Database Integration (ORM)",
         lessons: [
             {
                 id: "db-1",
@@ -360,7 +416,7 @@ export class UserService {
     },
     {
         id: "graphql",
-        title: "9. GraphQL Resolver APIs",
+        title: "10. GraphQL Resolver APIs",
         lessons: [
             {
                 id: "graphql-1",

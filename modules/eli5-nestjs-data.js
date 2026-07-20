@@ -63,7 +63,14 @@ var eli5NestjsData = {
     <p>It's like having a security camera that not only watches but also stamps a timestamp on every request!</p>
   `,
 
-  // ─── Module 8: Database Integration (ORM) ───
+  // ─── Module 8: Exception Filters & Error Handling ───
+  'exceptions-1': `
+    <p>An <strong>Exception Filter</strong> is like an <strong>insurance claims handler</strong>. When something goes wrong (a car accident, a broken pipe), instead of panicking, you call the handler. They know exactly what paperwork to fill out, what to tell you, and how to file it properly.</p>
+    <p>In NestJS, when your code throws an error, the built-in Exceptions Layer catches it and turns it into a proper HTTP response. If you throw <code>NotFoundException</code>, the client gets a <code>404</code>. If you throw <code>BadRequestException</code>, they get a <code>400</code>. You don't have to manually write <code>res.status(404).send(...)</code> everywhere.</p>
+    <p>But what if you want to customize how errors look? That's where custom Exception Filters come in. You create a class that catches errors and formats them however you want — adding timestamps, logging to a file, or returning a friendlier error message. It's like having your own personal error translator!</p>
+  `,
+
+  // ─── Module 9: Database Integration (ORM) ───
   'db-1': `
     <p>An <strong>ORM</strong> (Object-Relational Mapper) is like a <strong>universal translator</strong> at the United Nations. Your code speaks "JavaScript objects" and the database speaks "SQL tables." The ORM translates between them so you don't have to learn both languages.</p>
     <p>In NestJS, ORMs like <strong>TypeORM</strong> or <strong>Prisma</strong> let you define your data as classes (like <code>User</code> with <code>id</code> and <code>username</code>). The ORM turns that class into a database table automatically.</p>
@@ -71,7 +78,7 @@ var eli5NestjsData = {
     <p>The <code>@InjectRepository(User)</code> decorator tells NestJS: "Give me the librarian who handles User books." NestJS hands it to you through dependency injection — no manual setup needed!</p>
   `,
 
-  // ─── Module 9: GraphQL Resolver APIs ───
+  // ─── Module 10: GraphQL Resolver APIs ───
   'graphql-1': `
     <p>In a regular REST API, you get what the server decides to give you — like ordering a set menu at a restaurant. In <strong>GraphQL</strong>, you get to say exactly what you want — like ordering à la carte: "I'll have the name, the email, but skip the address."</p>
     <p>A <strong>Resolver</strong> is like a <strong>waiter who takes your custom order</strong>. Instead of controllers with fixed routes, you define resolvers that handle specific queries and mutations.</p>
