@@ -579,61 +579,14 @@
             Your Dashboard
           </h2>
           <div class="dashboard-grid">
-            <!-- Profile Card -->
-            <div class="dashboard-card profile-card">
-              <div class="profile-header">
-                <div class="profile-avatar">
-                  <span class="avatar-icon">L</span>
-                </div>
-                <div class="profile-info">
-                  <h3 id="profileName">Learner</h3>
-                  <p class="profile-level" id="profileLevel">Level 1 - Beginner</p>
-                  <p class="profile-join">Joined: <span id="joinDate">Today</span></p>
-                </div>
-                <button
-                  class="profile-edit-btn"
-                  id="profileEditBtn"
-                  title="Edit Profile"
-                  aria-label="Edit Profile"
-                >
-                  <i class="fas fa-pen"></i>
-                </button>
-              </div>
-              <div class="profile-stats">
-                <div class="profile-stat">
-                  <span class="profile-stat-value" id="profileTotalXP">0</span>
-                  <span class="profile-stat-label">Total XP</span>
-                </div>
-                <div class="profile-stat">
-                  <span class="profile-stat-value" id="profileProblems">0</span>
-                  <span class="profile-stat-label">Problems</span>
-                </div>
-                <div class="profile-stat">
-                  <span class="profile-stat-value" id="profileStreak">0</span>
-                  <span class="profile-stat-label">Day Streak</span>
-                </div>
-                <div class="profile-stat">
-                  <span class="profile-stat-value" id="profileFreezes">0</span>
-                  <span class="profile-stat-label">Freezes</span>
-                </div>
-                <div class="profile-stat">
-                  <span class="profile-stat-value" id="profileBadges">0</span>
-                  <span class="profile-stat-label">Badges</span>
-                </div>
-              </div>
-              <div class="profile-progress" style="margin-bottom: 1rem">
-                <div class="progress-bar-container">
-                  <div class="progress-label">
-                    <span>Level Progress</span>
-                    <span id="profileLevelProgress">0%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" id="profileProgressBar"></div>
-                  </div>
-                </div>
-              </div>
+            <!-- Profile summary card — redirects to consolidated /profile page -->
+            <div class="dashboard-card profile-summary-card">
+              <h3>👤 Profile</h3>
+              <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 0.75rem;">
+                View your stats, skills, bookmarks, and account settings.
+              </p>
               <a
-                href="/pages/career/resume/resume.html"
+                href="/pages/profile/profile.html"
                 class="btn btn-secondary"
                 style="
                   width: 100%;
@@ -646,7 +599,7 @@
                   text-decoration: none;
                 "
               >
-                <i class="fas fa-file-alt"></i> View Coding Resume
+                <i class="fas fa-user"></i> Go to My Profile
               </a>
             </div>
             <div class="dashboard-card stats-card">
@@ -858,11 +811,7 @@
       <!-- Quiz Modal (replaced by full-page topic-quiz) -->
       <!-- Topic quiz now lives at pages/topic-quiz/topic-quiz.html -->
 
-      <!-- Profile Edit Modal -->
-      <div id="profile-edit-modal-placeholder"></div>
-
-      <!-- Profile Section -->
-      <div id="profile-placeholder"></div>
+      <!-- Profile Section (migrated to pages/profile/profile.html) -->
 
       <!-- Notes Modal -->
       <div id="notes-modal-placeholder"></div>
@@ -990,8 +939,8 @@
           loadPartial('topic-modal-placeholder', '/partials/topic-modal.html'),
           loadPartial('quiz-editor-modal-placeholder', '/partials/quiz-editor-modal.html'),
           // Topic quiz moved to dedicated full page: pages/topic-quiz/topic-quiz.html
-          loadPartial('profile-edit-modal-placeholder', '/partials/profile-edit-modal.html'),
-          loadPartial('profile-placeholder', '/partials/profile.html'),
+          // Profile migrated to dedicated page at pages/profile/profile.html
+          // Profile edit modal also lives on the profile page only,
           loadPartial('notes-modal-placeholder', '/partials/notes-modal.html'),
           loadPartial('change-password-modal-placeholder', '/partials/change-password-modal.html'),
           loadPartial('delete-account-modal-placeholder', '/partials/delete-account-modal.html'),
