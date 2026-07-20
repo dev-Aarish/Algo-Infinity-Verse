@@ -14,6 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Third-party libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <!-- Data dependencies -->
     <script src="../../data/dsa-topics.js"></script>
     <script src="../../data/practice-problems.js"></script>
@@ -121,21 +126,10 @@
              ========================================================== -->
         <div class="pf-card-grid">
 
-            <!-- Row 1: Activity Heatmap (full width) -->
+            <!-- Row 1: Activity Heatmap (full row width) — GitHub-style contribution graph -->
             <section class="pf-card grid-span-3">
                 <div class="pf-card-header">
                     <h3><i class="fas fa-calendar-alt"></i> Activity Heatmap</h3>
-                </div>
-                <div class="heatmap-legend">
-                    <span>Less</span>
-                    <div class="legend-swatches">
-                        <div class="legend-swatch" data-level="0"></div>
-                        <div class="legend-swatch" data-level="1"></div>
-                        <div class="legend-swatch" data-level="2"></div>
-                        <div class="legend-swatch" data-level="3"></div>
-                        <div class="legend-swatch" data-level="4"></div>
-                    </div>
-                    <span>More</span>
                 </div>
                 <div class="heatmap-container" id="activityHeatmap">
                     <p class="pf-empty">No activity data yet. Start solving problems!</p>
@@ -223,8 +217,8 @@
                 </div>
             </section>
 
-            <!-- Recently Viewed Problems -->
-            <section class="pf-card">
+            <!-- Recently Viewed Problems (spans 2 cols) -->
+            <section class="pf-card grid-span-2">
                 <div class="pf-card-header">
                     <h3><i class="fas fa-history"></i> Recently Viewed</h3>
                 </div>
@@ -528,32 +522,53 @@
               <li class="cpw-rule" id="ruleSpecial"><span class="cpw-rule-icon"><i class="fas fa-circle"></i></span> One special character</li>
             </ul>
           </div>
-          <button type="submit" class="btn btn-primary cpw-submit" id="changePasswordSubmit"><i class="fas fa-save"></i> Update Password</button>
+          <div class="cpw-field">
+            <label for="confirmNewPassword">Confirm New Password</label>
+            <div class="cpw-input-wrap">
+              <input type="password" id="confirmNewPassword" class="cpw-input" placeholder="Confirm new password" autocomplete="new-password" required>
+              <button type="button" class="cpw-toggle" data-target="confirmNewPassword" aria-label="Toggle confirm password visibility">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <small id="confirmPasswordError" class="cpw-field-error"></small>
+          </div>
+        </div>
+        <div class="cpw-footer">
+          <button type="button" class="cpw-btn cpw-btn--outline" id="cancelPasswordChange">Cancel</button>
+          <button type="button" class="cpw-btn cpw-btn--primary" id="savePasswordBtn"><i class="fas fa-key"></i><span>Change Password</span></button>
         </div>
       </div>
     </div>
 
     <!-- Delete Account Modal -->
-    <div class="modal" id="deleteAccountConfirmModal" role="dialog" aria-modal="true" aria-labelledby="deleteAccountTitle">
+    <div class="modal" id="deleteAccountModal" role="dialog" aria-modal="true" aria-labelledby="deleteAccountTitle">
       <div class="modal-content delete-account-modal-content">
-        <button type="button" class="modal-close" id="deleteAccountModalClose" aria-label="Close delete account modal">&times;</button>
-        <div class="dac-icon-area">
-          <div class="dac-icon"><i class="fas fa-triangle-exclamation"></i></div>
+        <button type="button" class="modal-close" id="deleteAccountModalClose" aria-label="Close">&times;</button>
+        <div class="delete-account-icon">
+          <div class="delete-account-icon-ring">
+            <i class="fas fa-trash"></i>
+          </div>
         </div>
-        <h2 class="dac-title" id="deleteAccountTitle">Delete Account</h2>
-        <p class="dac-subtitle">This action is permanent and cannot be undone.</p>
-        <div id="deleteAccountMessage" class="dac-message" role="alert" hidden></div>
-        <div class="dac-warnings">
-          <div class="dac-warning-item"><i class="fas fa-times"></i> All progress and XP will be lost</div>
-          <div class="dac-warning-item"><i class="fas fa-times"></i> Bookmarks and notes will be removed</div>
-          <div class="dac-warning-item"><i class="fas fa-times"></i> You will be signed out of all devices</div>
+        <h2 class="delete-account-title" id="deleteAccountTitle">Delete Account</h2>
+        <p class="delete-account-message">
+          This will permanently delete your account and all associated data.
+          <strong>This action cannot be undone.</strong>
+        </p>
+        <div class="delete-account-form">
+          <div class="password-field">
+            <label for="deleteAccountPassword">Confirm your password</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="deleteAccountPassword" placeholder="Enter your password" autocomplete="current-password">
+              <button type="button" class="password-toggle" data-target="deleteAccountPassword">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <small id="deleteAccountPasswordError" class="field-error" role="alert"></small>
+          </div>
         </div>
-        <div class="dac-input-group">
-          <textarea class="dac-input" id="deleteAccountReason" placeholder="Tell us why you're leaving (optional)" rows="2"></textarea>
-        </div>
-        <div class="dac-actions">
-          <button type="button" class="btn" id="deleteAccountCancelBtn"><i class="fas fa-arrow-left"></i> Keep My Account</button>
-          <button type="button" class="btn btn-danger" id="deleteAccountConfirmBtn"><i class="fas fa-trash"></i> Delete My Account</button>
+        <div class="delete-account-actions">
+          <button type="button" class="delete-account-btn delete-account-btn--cancel" id="deleteAccountCancel">Cancel</button>
+          <button type="button" class="delete-account-btn delete-account-btn--danger" id="deleteAccountConfirm">Delete Account</button>
         </div>
       </div>
     </div>
@@ -569,11 +584,15 @@
     </script>
     <script src="../../bootstrap-legacy.js"></script>
     <script>
-      // Load navbar after bootstrap data modules are available
+      // Load navbar and initialize its interactive behaviors
       if (typeof loadPartial === 'function') {
-        loadPartial('navbar-placeholder', '/partials/navbar.html');
+        loadPartial('navbar-placeholder', '/partials/navbar.html').then(function () {
+          import('/modules/navbar.js').then(function (m) { m.initNavbar(); });
+        });
       }
     </script>
+    <script src="../../auth.js"></script>
+    <script type="module" src="../../modules/profile-edit.js"></script>
     <script src="profile.js"></script>
 
 </body>

@@ -45,8 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const recentActivityEl = $('recentActivityList');
   const skillsMasteryEl = $('skillsMasteryGrid');
 
+  // Sync saved data from localStorage into userProgress before init
+  (function syncSavedProgress() {
+    try {
+      var saved = localStorage.getItem('algoInfinityVerse');
+      if (saved) {
+        var data = JSON.parse(saved);
+        if (data && typeof data === 'object' && typeof window.userProgress === 'object') {
+          Object.assign(window.userProgress, data);
+        }
+      }
+    } catch(e) { /* localStorage read failed, use defaults */ }
+  })();
+
   // Load userProgress and init
-  setTimeout(() => {
+  setTimeout(function() {
     try { initProfile(); }
     catch (err) { console.warn('Profile init error:', err); }
   }, 100);
@@ -97,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof window.openProfileModal === 'function') window.openProfileModal();
     });
   }
+
+  // Wire edit profile button — initProfileEdit() from profile-edit.js handles this
+  if (typeof window.initProfileEdit === 'function') window.initProfileEdit();
 
   const profileSaveBtn = $('profileSaveBtn');
   const profileCancelBtn = $('profileCancelBtn');
@@ -233,8 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const weeks = [];
     let cur = [];
-    let pm = -1;
-    const months = [];
     const d2 = new Date(start);
 
     for (let i = 0; i < WEEKS * 7; i++) {
@@ -244,12 +258,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (cur.length > 0) weeks.push(cur);
 
+    // Detect month boundaries for labels
+    const monthBoundaries = [];
+    let lastMonth = -1;
     weeks.forEach((w, wi) => {
-      const thu = w[Math.min(4, w.length - 1)];
-      const m = thu.getMonth();
-      if (m !== pm) {
-        months.push({ i: wi, l: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m] });
-        pm = m;
+      const mid = w[Math.min(3, w.length - 1)];
+      const m = mid.getMonth();
+      if (m !== lastMonth) {
+        monthBoundaries.push({ weekIdx: wi, label: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m] });
+        lastMonth = m;
       }
     });
 
@@ -261,22 +278,37 @@ document.addEventListener('DOMContentLoaded', () => {
       return y + '-' + mm + '-' + dd;
     };
 
-    let html = '<div class="heatmap-months-row">';
-    months.forEach(m => { html += '<span class="heatmap-month-label" style="grid-column:' + (m.i + 2) + '">' + m.l + '</span>'; });
+    // Compute total contributions in range
+    let total = 0;
+    const iter = new Date(start);
+    while (iter <= today) {
+      total += data[fmt(iter)] || 0;
+      iter.setDate(iter.getDate() + 1);
+    }
+
+    let html = '<div class="heatmap-stats"><strong>' + total + '</strong> problems solved in the last 6 months</div>';
+    html += '<div class="heatmap-legend"><span>Less</span><div class="legend-swatches">';
+    for (var l = 0; l <= 4; l++) { html += '<div class="legend-swatch" data-level="' + l + '"></div>'; }
+    html += '</div><span>More</span></div>';
+    html += '<div class="heatmap-months-row">';
+    monthBoundaries.forEach(function(mb, i) {
+      var span = i < monthBoundaries.length - 1 ? monthBoundaries[i + 1].weekIdx - mb.weekIdx : weeks.length - mb.weekIdx;
+      html += '<span class="heatmap-month-label" style="flex:' + span + '">' + mb.label + '</span>';
+    });
     html += '</div><div class="heatmap-grid"><div class="heatmap-weekday-labels">';
-    wdLabels.forEach(l => { html += '<span class="heatmap-weekday-label">' + l + '</span>'; });
+    wdLabels.forEach(function(l) { html += '<span class="heatmap-weekday-label">' + l + '</span>'; });
     html += '</div>';
 
-    weeks.forEach(w => {
+    weeks.forEach(function(w) {
       html += '<div class="heatmap-week">';
-      for (let di = 0; di < 7; di++) {
+      for (var di = 0; di < 7; di++) {
         if (di < w.length) {
-          const date = w[di];
-          const key = fmt(date);
-          const cnt = data[key] || 0;
-          const lvl = getActivityLevel(cnt);
-          const isFut = date > today;
-          html += '<div class="heatmap-day" data-level="' + (isFut ? -1 : lvl) + '" data-date="' + key + '" data-count="' + cnt + '" data-future="' + isFut + '" title="' + date.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' }) + ': ' + cnt + ' problem' + (cnt !== 1 ? 's' : '') + ' solved"></div>';
+          var date = w[di];
+          var key = fmt(date);
+          var cnt = data[key] || 0;
+          var lvl = getActivityLevel(cnt);
+          var isFut = date > today;
+          html += '<div class="heatmap-day" data-level="' + (isFut ? -1 : lvl) + '" data-date="' + key + '" data-count="' + cnt + '" data-future="' + isFut + '"></div>';
         } else {
           html += '<div class="heatmap-day" data-future="true"></div>';
         }
@@ -519,11 +551,12 @@ document.addEventListener('DOMContentLoaded', () => {
       skillsMasteryEl.innerHTML = '<p class="pf-empty">No topics available yet.</p>';
       return;
     }
-    skillsMasteryEl.innerHTML = topics.map(t => {
-      const p = window.getTopicProgress(t.name);
+    // Clean topic names — no emojis, no purplish backgrounds
+    skillsMasteryEl.innerHTML = topics.map(function(t) {
+      var p = window.getTopicProgress(t.name);
       if (!p || !p.total) return '';
       return '<div class="skill-mastery-item">' +
-        '<div class="mastery-header"><span class="mastery-label">' + t.icon + ' ' + t.name + '</span><span class="mastery-stats">' + p.completed + '/' + p.total + '</span></div>' +
+        '<div class="mastery-header"><span class="mastery-label">' + t.name + '</span><span class="mastery-stats">' + p.completed + '/' + p.total + '</span></div>' +
         '<div class="mastery-bar"><div class="mastery-fill" style="width:' + p.percentage + '%"></div></div>' +
         '<span class="mastery-percentage">' + p.percentage + '%</span>' +
       '</div>';
