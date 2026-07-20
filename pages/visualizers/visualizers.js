@@ -1727,6 +1727,34 @@ const visualizers = [
     icon: 'fa-tree',
     desc: 'See how chess engines hash board positions in O(1) per move using XOR — incremental updates, undo via self-inverse XOR, and transposition detection.',
   },
+  {
+    name: 'CDN Request Flow Visualizer',
+    path: '/pages/visualizers/cdn-flow-visualizer/index.html',
+    category: 'Distributed Systems',
+    icon: 'fa-globe',
+    desc: 'See how content is delivered from edge locations to users via CDN with origin pull, edge caching, and TTL-based cache invalidation.',
+  },
+  {
+    name: 'JavaScript Event Loop Visualizer',
+    path: '/pages/visualizers/event-loop-visualizer/event-loop-visualizer.html',
+    category: 'Systems & OS',
+    icon: 'fa-rotate',
+    desc: 'Interactive JavaScript runtime visualizer: Call Stack, Web APIs, Microtask Queue, Macrotask Queue, and the Event Loop scheduler.',
+  },
+  {
+    name: 'DFS Maze Generation Visualizer',
+    path: '/pages/visualizers/maze-generation-visualizer/index.html',
+    category: 'Graph Algorithms',
+    icon: 'fa-border-all',
+    desc: 'Watch recursive DFS carve maze paths on a grid with real-time backtracking visualization.',
+  },
+  {
+    name: 'Redis Cache Visualizer',
+    path: '/pages/visualizers/redis-cache-visualizer/index.html',
+    category: 'Systems & OS',
+    icon: 'fa-bolt',
+    desc: 'See how in-memory caching improves performance — set/get keys with TTL-based expiration and cache miss tracking.',
+  },
 ];
 
 /* ─── Categories ─── */
