@@ -65,30 +65,7 @@ function updateDashboard() {
   updateRecentProblems();
   updateRecommendations();
   renderBookmarkCollectionsPanel();
-  updateReviewQueueWidget();    const grid = document.querySelector('.dashboard-grid');
-  if (grid && !document.getElementById('personalityCard')) {
-    const pCard = document.createElement('div');
-    pCard.className = 'dashboard-card personality-card';
-    pCard.id = 'personalityCard';
-    const profileCard = grid.querySelector('.profile-card, .profile-summary-card');
-    if (profileCard) profileCard.after(pCard);
-    else grid.prepend(pCard);
-  }
-  if (typeof renderPersonalityCard === 'function') renderPersonalityCard();
-
-  if (grid && !document.getElementById('mistakeDnaCard')) {
-    const mCard = document.createElement('div');
-    mCard.className = 'dashboard-card mistake-dna-card';
-    mCard.id = 'mistakeDnaCard';
-    const personalityCard = document.getElementById('personalityCard');
-    if (personalityCard) personalityCard.after(mCard);
-    else {
-      const profileCard = grid.querySelector('.profile-card, .profile-summary-card');
-      if (profileCard) profileCard.after(mCard);
-      else grid.prepend(mCard);
-    }
-  }
-  if (typeof renderMistakeDnaCard === 'function') renderMistakeDnaCard();
+  updateReviewQueueWidget();
 }
 
 function updateCurrentDate() {
