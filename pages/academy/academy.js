@@ -244,6 +244,15 @@ const academies = [
     difficulty: 'Intermediate',
     desc: 'Master Redis for in-memory caching, pub/sub messaging, sorted sets, and high-performance data structures.',
   },
+  {
+    id: 'cassandra',
+    name: 'Cassandra Learning Hub',
+    path: '/pages/cassandra-learning-hub/cassandra-learning-hub.html',
+    category: 'Databases',
+    icon: 'fa-solid fa-server',
+    difficulty: 'Intermediate',
+    desc: 'Explore Apache Cassandra for distributed NoSQL databases, partitioning, replication, CQL, and fault-tolerant architecture.',
+  },
 
   // ── AI / Misc ──
   {
@@ -263,7 +272,7 @@ const categoryDefs = [
   { label: 'Frontend', key: 'frontend', count: 8 },
   { label: 'Backend', key: 'backend', count: 10 },
   { label: 'Cloud & DevOps', key: 'cloud-devops', count: 2 },
-  { label: 'Databases', key: 'databases', count: 6 },
+  { label: 'Databases', key: 'databases', count: 7 },
   { label: 'AI / Misc', key: 'ai-misc', count: 1 },
 ];
 
@@ -514,6 +523,7 @@ function initFlipAnimation() {
     { name: 'Neo4j', cat: 'databases' },
     { name: 'SQLite', cat: 'databases' },
     { name: 'Redis', cat: 'databases' },
+    { name: 'Cassandra', cat: 'databases' },
     { name: 'Fail', cat: 'ai-misc' },
   ];
 
