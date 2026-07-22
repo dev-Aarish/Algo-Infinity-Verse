@@ -54,7 +54,11 @@ function initTopicOfTheDay() {
     'Dynamic Programming': 'fa-puzzle-piece',
     'Heaps': 'fa-chart-bar',
   };
-  totdIcon.innerHTML = `<i class="fas ${topicIcons[topic.name] || 'fa-book'}" style="font-size: 2.5rem;"></i>`;
+  totdIcon.textContent = '';
+  const icon = document.createElement('i');
+  icon.className = `fas ${topicIcons[topic.name] || 'fa-book'}`;
+  icon.style.fontSize = '2.5rem';
+  totdIcon.appendChild(icon);
   const totdTitle = document.getElementById('totdTitle');
   if (totdTitle) totdTitle.textContent = topic.name;
   const totdDesc = document.getElementById('totdDesc');

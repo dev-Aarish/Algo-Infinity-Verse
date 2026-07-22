@@ -1498,16 +1498,6 @@ body.shortcuts-modal-open .navbar {
   transition: opacity 0.2s ease;
 }
 
-body.modal-open {
-  overflow: hidden;
-}
-
-body.shortcuts-modal-open .navbar {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
 /* ── 15. SCROLL REVEAL ── */
 .hp-reveal {
   opacity: 0;
