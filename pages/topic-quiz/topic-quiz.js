@@ -90,7 +90,7 @@ function getTopicName(topicKey) {
     matrix: 'Matrix',
     stack: 'Stacks',
     queue: 'Queues',
-    binarysearch: 'Binary Search',
+    binarysearch: 'Searching',
     recursion: 'Recursion',
     backtracking: 'Backtracking',
     sorting: 'Sorting',
