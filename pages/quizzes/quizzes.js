@@ -112,7 +112,7 @@ const quizzes = [
     icon: 'fa-rotate',
     desc: 'Base cases, call stacks, tail recursion, and recursive problem-solving patterns.',
     difficulty: 'medium',
-    questions: 15,
+    questions: 10,
   },
   {
     name: 'Two Pointers',
