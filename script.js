@@ -2453,7 +2453,16 @@ function initTopicOfTheDay() {
   const totdIcon = document.getElementById('totdIcon');
   if (!totdIcon) return;
 
-  totdIcon.textContent = topic.icon;
+  const topicIcons = {
+    'Arrays': 'fa-layer-group',
+    'Strings': 'fa-font',
+    'Linked List': 'fa-link',
+    'Trees': 'fa-tree',
+    'Graphs': 'fa-project-diagram',
+    'Dynamic Programming': 'fa-puzzle-piece',
+    'Heaps': 'fa-chart-bar',
+  };
+  totdIcon.innerHTML = `<i class="fas ${topicIcons[topic.name] || 'fa-book'}" style="font-size: 2.5rem;"></i>`;
   document.getElementById('totdTitle').textContent = topic.name;
   document.getElementById('totdDesc').textContent = topic.description;
 
