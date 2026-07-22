@@ -153,6 +153,11 @@
         document.documentElement.style.scrollBehavior = 'auto';
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
+        var _splashTimeout = setTimeout(function() {
+          document.documentElement.style.overflow = '';
+          document.body.style.overflow = '';
+          ls.style.display = 'none';
+        }, 8000);
 
         var tInterval;
         (function() {
@@ -173,6 +178,7 @@
         var tl = gsap.timeline({
           onComplete: function() {
             if (tInterval) { clearInterval(tInterval); tInterval = null; }
+            clearTimeout(_splashTimeout);
             document.documentElement.style.overflow = '';
             document.body.style.overflow = '';
             document.documentElement.style.scrollBehavior = 'auto';
@@ -261,6 +267,14 @@
                   <td><kbd>Alt</kbd> + <kbd>D</kbd></td>
                   <td>Go to Dashboard</td>
                 </tr>
+                <tr>
+                  <td><kbd>Alt</kbd> + <kbd>S</kbd></td>
+                  <td>Open Settings</td>
+                </tr>
+                <tr>
+                  <td><kbd>Alt</kbd> + <kbd>L</kbd></td>
+                  <td>Open Learn Menu</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -268,9 +282,18 @@
             <h4><i class="fas fa-search"></i> Search</h4>
             <table class="shortcuts-table">
               <tbody>
-                <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Focus Search</td></tr>
-                <tr><td><kbd>/</kbd></td><td>Focus Search</td></tr>
-                <tr><td><kbd>Esc</kbd></td><td>Clear Search / Close Modal</td></tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>K</kbd></td>
+                  <td>Focus Search</td>
+                </tr>
+                <tr>
+                  <td><kbd>/</kbd></td>
+                  <td>Focus Search</td>
+                </tr>
+                <tr>
+                  <td><kbd>Esc</kbd></td>
+                  <td>Clear Search / Close Modal</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -278,11 +301,38 @@
             <h4><i class="fas fa-code"></i> Code Editor</h4>
             <table class="shortcuts-table">
               <tbody>
-                <tr><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>Run Code</td></tr>
-                <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Save/Submit Code</td></tr>
-                <tr><td><kbd>Ctrl</kbd> + <kbd>/</kbd></td><td>Toggle Comment</td></tr>
-                <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Undo</td></tr>
-                <tr><td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Redo</td></tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td>
+                  <td>Run Code</td>
+                </tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
+                  <td>Save/Submit Code</td>
+                </tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>/</kbd></td>
+                  <td>Toggle Comment</td>
+                </tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
+                  <td>Undo</td>
+                </tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td>
+                  <td>Redo</td>
+                </tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>F</kbd></td>
+                  <td>Find</td>
+                </tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>H</kbd></td>
+                  <td>Replace</td>
+                </tr>
+                <tr>
+                  <td><kbd>Ctrl</kbd> + <kbd>G</kbd></td>
+                  <td>Go to Line</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -290,10 +340,22 @@
             <h4><i class="fas fa-globe"></i> General</h4>
             <table class="shortcuts-table">
               <tbody>
-                <tr><td><kbd>?</kbd></td><td>Open Shortcuts Help</td></tr>
-                <tr><td><kbd>Esc</kbd></td><td>Close Modal / Dialog</td></tr>
-                <tr><td><kbd>Tab</kbd></td><td>Navigate to Next Element</td></tr>
-                <tr><td><kbd>Shift</kbd> + <kbd>Tab</kbd></td><td>Navigate to Previous Element</td></tr>
+                <tr>
+                  <td><kbd>?</kbd></td>
+                  <td>Open Shortcuts Help</td>
+                </tr>
+                <tr>
+                  <td><kbd>Esc</kbd></td>
+                  <td>Close Modal / Dialog</td>
+                </tr>
+                <tr>
+                  <td><kbd>Tab</kbd></td>
+                  <td>Navigate to Next Element</td>
+                </tr>
+                <tr>
+                  <td><kbd>Shift</kbd> + <kbd>Tab</kbd></td>
+                  <td>Navigate to Previous Element</td>
+                </tr>
               </tbody>
             </table>
           </div>
