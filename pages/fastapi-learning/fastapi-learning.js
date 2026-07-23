@@ -142,7 +142,7 @@ const curriculum = [
       },
       {
         id: 'q-fa-4',
-        question: 'Which FastAPI constructor parameter lets you group endpoints in the Swagger UI?',
+        question: 'Which path-operation decorator parameter lets you group endpoints in the Swagger UI?',
         options: ['group', 'namespace', 'tags', 'category'],
         correct: 2,
       },
