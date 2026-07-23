@@ -2912,6 +2912,8 @@ function resolveStaticPath(pathname) {
     '/algorithm-timeline': 'pages/visualizers/algorithm-timeline/algorithm-timeline.html',
     '/practice': 'pages/practice/problems.html',
     '/practice.html': 'pages/practice/problems.html',
+    '/practice/editor': 'pages/practice/editor.html',
+    '/practice/editor.html': 'pages/practice/editor.html',
     '/support-page': 'support-page/index.html',
     '/support-page/': 'support-page/index.html',
     '/leaderboard': 'pages/leaderboard/leaderboard.html',
@@ -3042,7 +3044,7 @@ async function serveStatic(req, res, pathname) {
       headers['Content-Security-Policy'] =
         `default-src 'self'; ` +
         `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://esm.sh https://cdn.socket.io; ` +
-        `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.tailwindcss.com; ` +
+        `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; ` +
         `font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; ` +
         `img-src 'self' data: https: blob:; ` +
         `connect-src 'self' https: wss:; ` +
