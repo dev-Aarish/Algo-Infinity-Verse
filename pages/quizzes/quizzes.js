@@ -172,9 +172,9 @@ const quizzes = [
   },
   {
     name: 'Number Theory',
-    path: '/pages/tools/quiz-system/quiz-system.html',
+    path: '/pages/topic-quiz/topic-quiz.html?topic=numbertheory',
     category: 'Advanced',
-    icon: 'fa-sigma',
+    icon: 'fa-square-root-variable',
     desc: 'GCD, modular arithmetic, prime sieves, combinatorics, and Euler\'s theorem.',
     difficulty: 'medium',
     questions: 14,
