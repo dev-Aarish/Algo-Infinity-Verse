@@ -236,6 +236,8 @@ html, body {
 .editor-lang-select:hover,
 .editor-lang-select:focus-visible {
   border-color: var(--editor-accent);
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .editor-lang-chevron {
