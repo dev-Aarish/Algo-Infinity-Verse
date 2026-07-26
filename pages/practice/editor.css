@@ -707,7 +707,27 @@ html, body {
   border: 1px solid var(--editor-border);
   border-radius: 8px;
   overflow: hidden;
-  transition: border-color 0.3s;
+  transition: none;
+}
+
+.test-case:hover {
+  transform: none;
+}
+
+.test-case-header,
+.test-case-status,
+.test-case-details,
+.test-case-details code,
+.test-case-actual {
+  transition: none;
+}
+
+.test-case-header:hover,
+.test-case-status:hover,
+.test-case-details:hover,
+.test-case-details code:hover,
+.test-case-actual:hover {
+  transform: none;
 }
 
 .test-case.passed {

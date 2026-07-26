@@ -304,7 +304,11 @@ function wireEvents(problem) {
 
   // Back
   dom.backBtn.addEventListener('click', () => {
-    window.location.href = '/practice';
+    if (window.history.length > 1) {
+      history.back();
+    } else {
+      window.location.href = '/pages/practice/problems.html';
+    }
   });
 
   // Tab switching
