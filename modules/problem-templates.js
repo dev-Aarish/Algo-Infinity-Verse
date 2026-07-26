@@ -96,10 +96,7 @@ export function getStarterCode(lang, problem) {
 }
 
 function buildDocComment(guide, lang) {
-  if (!guide) return '';
-  const lines = guide.split('\n');
-  const prefix = lang === 'python' ? '# ' : '// ';
-  return lines.map((l) => prefix + l).join('\n') + '\n';
+  return '';
 }
 
 function getClassStarter(lang, problem) {

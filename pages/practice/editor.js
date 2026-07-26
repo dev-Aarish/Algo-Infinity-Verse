@@ -9,7 +9,7 @@
 import { loadMonaco, getMonacoLanguage, preloadMonaco, setMonacoTheme } from '../../modules/monaco-loader.js';
 import { getProblem, waitForData, migrateLegacyDraft } from '../../modules/problem-store.js';
 import { getStarterCode, buildHarness, parseTestResults, getProblemSignature } from '../../modules/problem-templates.js';
-import { executeProblem, getSupportedLanguages, saveDraft, loadDraft, clearDraft } from '../../modules/execution-client.js';
+import { executeProblem, getSupportedLanguages, saveDraft, clearDraft } from '../../modules/execution-client.js';
 
 // ─── State ───
 const state = {
@@ -152,26 +152,13 @@ async function init() {
 async function initMonaco(problem) {
   const starterCode = getStarterCode(state.lang, problem);
 
-  // Try loading draft, with legacy migration
-  let code = loadDraft(problem.id, state.lang);
-  if (code === null) {
-    // Attempt migration from legacy single-language key format
-    code = migrateLegacyDraft(problem.id, state.lang);
-  }
-
-  // Check if draft is stale (problem signature changed)
-  if (code !== null) {
-    const draftSig = localStorage.getItem(`editorDraft_sig_${problem.id}_${state.lang}`);
-    const currentSig = getProblemSignature(problem);
-    if (!draftSig || draftSig !== currentSig) {
-      code = null;
-      clearDraft(problem.id, state.lang);
-    }
-  }
+  // Clear any previously saved draft so old code is never shown on page load
+  clearDraft(problem.id, state.lang);
+  migrateLegacyDraft(problem.id, state.lang);
 
   const editor = await loadMonaco(dom.monacoContainer, {
     language: getMonacoLanguage(state.lang),
-    value: code || starterCode,
+    value: starterCode,
     theme: state.theme,
     fontSize: parseInt(localStorage.getItem('editorFontSize')) || 14,
     lineNumbers: 'on',
@@ -307,6 +294,7 @@ function wireEvents(problem) {
 
   // Back
   dom.backBtn.addEventListener('click', () => {
+    clearDraft(state.problem.id, state.lang);
     if (window.history.length > 1) {
       history.back();
     } else {
@@ -354,20 +342,14 @@ function wireEvents(problem) {
 
 // ─── Language Switching ───
 async function switchLanguage(newLang, problem) {
-  const currentCode = state.editor.getValue();
   const currentLang = state.lang;
+  const newCode = getStarterCode(newLang, problem);
 
-  // Save current draft before switching
-  saveDraft(problem.id, currentLang, currentCode);
+  clearDraft(problem.id, currentLang);
+  clearDraft(problem.id, newLang);
 
   state.lang = newLang;
   dom.langStatus.textContent = getSupportedLanguages().find((l) => l.value === newLang)?.label || newLang;
-
-  // Check for draft in new language
-  let newCode = loadDraft(problem.id, newLang);
-  if (newCode === null) {
-    newCode = getStarterCode(newLang, problem);
-  }
 
   // Update Monaco language mode
   const model = state.editor.getModel();
