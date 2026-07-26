@@ -69,6 +69,7 @@ self.onmessage = function(e) {
         appendLog("error", args.map(formatValue).join(" "));
     };
 
+    const startTime = performance.now();
     try {
         const execute = new Function(code);
         const result = execute();
@@ -77,16 +78,20 @@ self.onmessage = function(e) {
             appendLog("log", formatValue(result));
         }
         
+        const endTime = performance.now();
+        const executionTime = (endTime - startTime).toFixed(2);
         try {
-            self.postMessage({ success: true, logs });
+            self.postMessage({ success: true, logs, executionTime });
         } catch (pmError) {
             self.postMessage({ success: false, error: "postMessage failed: " + pmError.message, logs: [] });
         }
     } catch (error) {
+        const endTime = performance.now();
+        const executionTime = (endTime - startTime).toFixed(2);
         try {
-            self.postMessage({ success: false, error: error.name + ": " + error.message, logs });
+            self.postMessage({ success: false, error: error.name + ": " + error.message, logs, executionTime });
         } catch (pmError) {
-            self.postMessage({ success: false, error: error.name + ": " + error.message + " (postMessage failed: " + pmError.message + ")", logs: [] });
+            self.postMessage({ success: false, error: error.name + ": " + error.message + " (postMessage failed: " + pmError.message + ")", logs: [], executionTime });
         }
     } finally {
         console.log = originalConsole.log;
@@ -130,8 +135,9 @@ export function executeSandboxedCode(code, timeoutMs = 3000) {
             worker.terminate();
             URL.revokeObjectURL(workerUrl);
             
-            const { success, error, logs } = e.data;
+            const { success, error, logs, executionTime } = e.data;
             if (success) {
+                logs.executionTime = executionTime;
                 resolve(logs);
             } else {
                 // Reject with the captured error, but also include logs printed before the error

@@ -59,6 +59,7 @@ function cacheDOM() {
   dom.outputMetrics = $('outputMetrics');
   dom.cpuTime = $('cpuTime');
   dom.memUsage = $('memUsage');
+  dom.metricsMemory = $('metricsMemory');
   dom.outputClearBtn = $('outputClearBtn');
   dom.outputBadge = $('outputBadge');
   dom.runningIndicator = $('runningIndicator');
@@ -602,8 +603,19 @@ function renderOutput(result) {
   const metrics = result.metrics || {};
   if (metrics.cpuTime || metrics.memory || metrics.executionTime) {
     dom.outputMetrics.classList.remove('hidden');
-    dom.cpuTime.textContent = metrics.cpuTime || metrics.executionTime || '-';
-    dom.memUsage.textContent = metrics.memory || '-';
+    if (metrics.cpuTime) {
+      dom.cpuTime.textContent = metrics.cpuTime + 's';
+    } else if (metrics.executionTime) {
+      dom.cpuTime.textContent = (parseFloat(metrics.executionTime) / 1000).toFixed(2) + 's';
+    } else {
+      dom.cpuTime.textContent = '-';
+    }
+    if (metrics.memory) {
+      dom.memUsage.textContent = metrics.memory + ' KB';
+      dom.metricsMemory.style.display = '';
+    } else {
+      dom.metricsMemory.style.display = 'none';
+    }
   } else {
     dom.outputMetrics.classList.add('hidden');
   }

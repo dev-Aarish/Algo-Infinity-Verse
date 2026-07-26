@@ -119,6 +119,7 @@ async function executeInBrowser(harnessCode, lang, testCount, timeoutMs, signal)
     result = await withCancellation(
       executeSandboxedCode(harnessCode, timeoutMs).then((logs) => ({
         stdout: logs.join('\n'),
+        metrics: { executionTime: logs.executionTime },
       })),
       signal,
       timeoutMs
