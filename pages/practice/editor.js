@@ -606,7 +606,7 @@ function renderOutput(result) {
   const allPassed = result.allPassed;
 
   if (allPassed) {
-    dom.outputContent.innerHTML = `<pre class="output-success"><i class="fas fa-check-circle"></i> All tests passed!\n\n${rawOutput ? 'Console output:\n' + escapeHtml(rawOutput) : ''}</pre>`;
+    dom.outputContent.innerHTML = `<pre class="output-success"><i class="fas fa-check-circle"></i> All tests passed!${rawOutput ? '\n\nConsole output:\n' + escapeHtml(rawOutput) : ''}</pre>`;
   } else if (rawOutput) {
     dom.outputContent.innerHTML = `<pre>${escapeHtml(rawOutput)}</pre>`;
   } else {
