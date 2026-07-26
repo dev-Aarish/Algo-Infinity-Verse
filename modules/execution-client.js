@@ -262,10 +262,6 @@ export function getSupportedLanguages() {
   return [
     { value: 'javascript', label: 'JavaScript', browser: true },
     { value: 'python', label: 'Python', browser: true },
-    { value: 'cpp', label: 'C++', browser: false },
-    { value: 'java', label: 'Java', browser: false },
-    { value: 'c', label: 'C', browser: false },
-    { value: 'swift', label: 'Swift', browser: false },
   ];
 }
 

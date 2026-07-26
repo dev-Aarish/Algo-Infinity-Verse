@@ -2877,6 +2877,14 @@ CRITICAL RULES:
     }
   }
 
+  // ── Code Execution (local dev) ──────────────────────────────────────
+  if (pathname === '/api/execute/problem' && req.method === 'POST') {
+    return sendJson(res, 200, {
+      success: false,
+      message: 'Server-side execution not available in local dev',
+    });
+  }
+
   return sendJson(res, 404, { error: 'Not found.' });
 }
 
