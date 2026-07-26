@@ -1,3 +1,4 @@
+/* global cytoscape, dagre, cytoscapeDagre */
 (function () {
   'use strict';
 
@@ -24,7 +25,7 @@
     '\\B': 'non-word boundary assertion',
     '.': 'matches any character (except newline)',
     '^': 'asserts start of string',
-    '$': 'asserts end of string',
+    $: 'asserts end of string',
     '|': 'alternation (OR)',
     '*': 'zero or more times (Kleene star)',
     '+': 'one or more times',
@@ -290,8 +291,12 @@
     savedPatterns: [],
   };
 
-  function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
-  function qsa(sel, ctx) { return (ctx || document).querySelectorAll(sel); }
+  function qs(sel, ctx) {
+    return (ctx || document).querySelector(sel);
+  }
+  function qsa(sel, ctx) {
+    return (ctx || document).querySelectorAll(sel);
+  }
 
   var dom = {};
 
@@ -368,7 +373,10 @@
       var args = arguments;
       var ctx = this;
       if (timer) clearTimeout(timer);
-      timer = setTimeout(function () { timer = null; fn.apply(ctx, args); }, ms);
+      timer = setTimeout(function () {
+        timer = null;
+        fn.apply(ctx, args);
+      }, ms);
     };
   }
 
@@ -378,11 +386,16 @@
     return d.innerHTML;
   }
 
+  var toastTimer = null;
   function showToast(msg, duration) {
     duration = duration || 2500;
+    if (toastTimer) clearTimeout(toastTimer);
     dom.shareToast.textContent = msg;
     dom.shareToast.hidden = false;
-    setTimeout(function () { dom.shareToast.hidden = true; }, duration);
+    toastTimer = setTimeout(function () {
+      dom.shareToast.hidden = true;
+      toastTimer = null;
+    }, duration);
   }
 
   function closeModals() {
@@ -391,7 +404,11 @@
   }
 
   function modalsClick(e) {
-    if (e.target.closest('.rg-modal-backdrop') || e.target.closest('.rg-modal-close') || e.target.closest('.rg-modal-cancel')) {
+    if (
+      e.target.closest('.rg-modal-backdrop') ||
+      e.target.closest('.rg-modal-close') ||
+      e.target.closest('.rg-modal-cancel')
+    ) {
       closeModals();
     }
   }
@@ -404,13 +421,8 @@
     }
   }
 
-  function escapeRegexLiteral(s) {
-    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
   function renderHighlight(text, matches) {
     if (!matches || matches.length === 0) return escHtml(text);
-    var segments = [];
     var handled = new Array(text.length).fill(null);
 
     matches.forEach(function (m) {
@@ -419,33 +431,40 @@
       for (var i = matchStart; i < matchEnd; i++) {
         handled[i] = handled[i] || 'rg-hl-g0';
       }
+      var prevGroupEnd = 0;
       for (var gi = 1; gi < m.length; gi++) {
-        if (m[gi] === undefined) continue;
-        var gRel = m[0].indexOf(m[gi]);
+        if (m[gi] === undefined || m[gi].length === 0) continue;
+        var gRel = m[0].indexOf(m[gi], prevGroupEnd);
+        if (gRel < 0) gRel = m[0].indexOf(m[gi]);
         if (gRel < 0) continue;
         var gStart = matchStart + gRel;
         var gEnd = gStart + m[gi].length;
+        prevGroupEnd = gRel + m[gi].length;
         for (var j = gStart; j < gEnd && j < text.length; j++) {
           handled[j] = 'rg-hl-g' + Math.min(gi, 8);
         }
       }
     });
 
-    var result = [];
+    var container = document.createElement('div');
     var i = 0;
+    var segStart;
     while (i < text.length) {
       if (handled[i]) {
         var cls = handled[i];
-        var start = i;
+        segStart = i;
         while (i < text.length && handled[i] === cls) i++;
-        result.push('<span class="' + cls + '">' + escHtml(text.slice(start, i)) + '</span>');
+        var span = document.createElement('span');
+        span.className = cls;
+        span.textContent = text.slice(segStart, i);
+        container.appendChild(span);
       } else {
-        var start = i;
+        segStart = i;
         while (i < text.length && !handled[i]) i++;
-        result.push(escHtml(text.slice(start, i)));
+        container.appendChild(document.createTextNode(text.slice(segStart, i)));
       }
     }
-    return result.join('');
+    return container.innerHTML;
   }
 
   function computeMatches() {
@@ -460,8 +479,10 @@
       dom.stepEstimate.innerHTML = '<i class="fas fa-gauge"></i> Steps: <strong>0</strong>';
       dom.backtrackWarn.style.display = 'none';
       dom.matchDetails.innerHTML = '';
-      dom.explanation.innerHTML = '<p class="rg-placeholder-text">Enter a regex pattern and click Match to see an explanation.</p>';
-      dom.groupDetails.innerHTML = '<p class="rg-placeholder-text">Matched groups will appear here.</p>';
+      dom.explanation.innerHTML =
+        '<p class="rg-placeholder-text">Enter a regex pattern and click Match to see an explanation.</p>';
+      dom.groupDetails.innerHTML =
+        '<p class="rg-placeholder-text">Matched groups will appear here.</p>';
       dom.charCount.textContent = test.length + ' chars';
       return;
     }
@@ -469,7 +490,8 @@
     var re = parsePattern(raw, flags);
     if (!re) {
       dom.highlightOverlay.innerHTML = '';
-      dom.matchDetails.innerHTML = '<div class="rg-match-item" style="border-color:var(--rg-rose);color:var(--rg-rose);">Invalid regex pattern</div>';
+      dom.matchDetails.innerHTML =
+        '<div class="rg-match-item" style="border-color:var(--rg-rose);color:var(--rg-rose);">Invalid regex pattern</div>';
       return;
     }
 
@@ -479,21 +501,24 @@
     var steps = 0;
     re.lastIndex = 0;
     while ((m = re.exec(test)) !== null) {
+      if (steps >= maxSteps) break;
       matches.push(m);
       steps++;
-      if (steps > maxSteps) break;
       if (!re.global && !re.sticky) break;
       if (m.index === re.lastIndex) re.lastIndex++;
     }
 
     var allMatches = matches;
-    var groupCount = allMatches.length > 0 ? (allMatches[0].length - 1) : 0;
+    var groupCount = allMatches.length > 0 ? allMatches[0].length - 1 : 0;
 
     dom.highlightOverlay.innerHTML = renderHighlight(test, allMatches);
     dom.charCount.textContent = test.length + ' chars';
-    dom.matchCount.innerHTML = '<i class="fas fa-check-circle"></i> Matches: <strong>' + allMatches.length + '</strong>';
-    dom.groupCount.innerHTML = '<i class="fas fa-layer-group"></i> Groups: <strong>' + groupCount + '</strong>';
-    dom.stepEstimate.innerHTML = '<i class="fas fa-gauge"></i> Steps: <strong>~' + (steps * test.length || 1) + '</strong>';
+    dom.matchCount.innerHTML =
+      '<i class="fas fa-check-circle"></i> Matches: <strong>' + allMatches.length + '</strong>';
+    dom.groupCount.innerHTML =
+      '<i class="fas fa-layer-group"></i> Groups: <strong>' + groupCount + '</strong>';
+    dom.stepEstimate.innerHTML =
+      '<i class="fas fa-gauge"></i> Steps: <strong>~' + (steps * test.length || 1) + '</strong>';
 
     var risk = checkCatastrophic(raw);
     if (risk) {
@@ -506,20 +531,24 @@
     var detailsHtml = '';
     allMatches.forEach(function (match, idx) {
       var displayStr = match[0].length > 50 ? match[0].slice(0, 50) + '...' : match[0];
-      detailsHtml += '<div class="rg-match-item" style="border-left-color:' + GROUP_BORDER[0] + ';">';
+      detailsHtml +=
+        '<div class="rg-match-item" style="border-left-color:' + GROUP_BORDER[0] + ';">';
       detailsHtml += '<span class="rg-match-idx">#' + (idx + 1) + '</span>';
       detailsHtml += escHtml(displayStr);
       detailsHtml += ' <span class="rg-match-idx">[' + match.index + ']</span>';
       detailsHtml += '</div>';
     });
-    dom.matchDetails.innerHTML = detailsHtml || '<div class="rg-match-item" style="border-color:transparent;color:var(--rg-muted);">No matches</div>';
+    dom.matchDetails.innerHTML =
+      detailsHtml ||
+      '<div class="rg-match-item" style="border-color:transparent;color:var(--rg-muted);">No matches</div>';
 
     dom.explanation.innerHTML = generateExplanation(raw);
     renderGroupDetails(allMatches);
   }
 
   function generateExplanation(pattern) {
-    if (!pattern) return '<p class="rg-placeholder-text">Enter a regex pattern and click Match to see an explanation.</p>';
+    if (!pattern)
+      return '<p class="rg-placeholder-text">Enter a regex pattern and click Match to see an explanation.</p>';
 
     var fragments = [];
     var i = 0;
@@ -528,28 +557,42 @@
 
       if (c === '\\' && i + 1 < pattern.length) {
         var esc = '\\' + pattern[i + 1];
-        var fullEsc = esc;
-        if (i + 2 < pattern.length && pattern[i + 2] === '+') { fullEsc = esc + '+'; }
-        else if (i + 2 < pattern.length && pattern[i + 2] === '*') { fullEsc = esc + '*'; }
-        else if (i + 2 < pattern.length && pattern[i + 2] === '?') { fullEsc = esc + '?'; }
 
         if (EXPLAIN_MAP[esc]) {
           fragments.push({ pat: esc, desc: EXPLAIN_MAP[esc] });
           i += 2;
         } else if (esc === '\\d' || esc === '\\w' || esc === '\\s') {
           var quant = '';
-          if (i + 2 < pattern.length && (pattern[i + 2] === '+' || pattern[i + 2] === '*' || pattern[i + 2] === '?')) {
+          if (
+            i + 2 < pattern.length &&
+            (pattern[i + 2] === '+' || pattern[i + 2] === '*' || pattern[i + 2] === '?')
+          ) {
             quant = pattern[i + 2];
-            fragments.push({ pat: esc + quant, desc: EXPLAIN_MAP[esc] + ', ' + explainQuant(quant) });
+          }
+          if (quant) {
+            fragments.push({
+              pat: esc + quant,
+              desc: EXPLAIN_MAP[esc] + ', ' + explainQuant(quant),
+            });
             i += 3;
           } else {
             fragments.push({ pat: esc, desc: EXPLAIN_MAP[esc] });
             i += 2;
           }
-        } else if (pattern[i + 1] === 'd' || pattern[i + 1] === 'w' || pattern[i + 1] === 's' ||
-                   pattern[i + 1] === 'D' || pattern[i + 1] === 'W' || pattern[i + 1] === 'S' ||
-                   pattern[i + 1] === 'b' || pattern[i + 1] === 'B') {
-          fragments.push({ pat: esc, desc: EXPLAIN_MAP[esc] || 'escaped character: ' + escHtml(esc) });
+        } else if (
+          pattern[i + 1] === 'd' ||
+          pattern[i + 1] === 'w' ||
+          pattern[i + 1] === 's' ||
+          pattern[i + 1] === 'D' ||
+          pattern[i + 1] === 'W' ||
+          pattern[i + 1] === 'S' ||
+          pattern[i + 1] === 'b' ||
+          pattern[i + 1] === 'B'
+        ) {
+          fragments.push({
+            pat: esc,
+            desc: EXPLAIN_MAP[esc] || 'escaped character: ' + escHtml(esc),
+          });
           i += 2;
         } else {
           fragments.push({ pat: esc, desc: 'escaped literal: ' + escHtml(pattern[i + 1]) });
@@ -581,28 +624,40 @@
         } else if (pattern.slice(i, i + 3) === '(?=') {
           var laEnd = findGroupEnd(pattern, i);
           if (laEnd > i) {
-            fragments.push({ pat: pattern.slice(i, laEnd + 1), desc: 'positive lookahead assertion' });
+            fragments.push({
+              pat: pattern.slice(i, laEnd + 1),
+              desc: 'positive lookahead assertion',
+            });
             i = laEnd + 1;
             continue;
           }
         } else if (pattern.slice(i, i + 3) === '(?!') {
           var naEnd = findGroupEnd(pattern, i);
           if (naEnd > i) {
-            fragments.push({ pat: pattern.slice(i, naEnd + 1), desc: 'negative lookahead assertion' });
+            fragments.push({
+              pat: pattern.slice(i, naEnd + 1),
+              desc: 'negative lookahead assertion',
+            });
             i = naEnd + 1;
             continue;
           }
         } else if (pattern.slice(i, i + 4) === '(?<=') {
           var lbEnd = findGroupEnd(pattern, i);
           if (lbEnd > i) {
-            fragments.push({ pat: pattern.slice(i, lbEnd + 1), desc: 'positive lookbehind assertion' });
+            fragments.push({
+              pat: pattern.slice(i, lbEnd + 1),
+              desc: 'positive lookbehind assertion',
+            });
             i = lbEnd + 1;
             continue;
           }
         } else if (pattern.slice(i, i + 4) === '(?<!') {
           var nbEnd = findGroupEnd(pattern, i);
           if (nbEnd > i) {
-            fragments.push({ pat: pattern.slice(i, nbEnd + 1), desc: 'negative lookbehind assertion' });
+            fragments.push({
+              pat: pattern.slice(i, nbEnd + 1),
+              desc: 'negative lookbehind assertion',
+            });
             i = nbEnd + 1;
             continue;
           }
@@ -611,7 +666,10 @@
           if (namedEnd > i) {
             var nameMatch = pattern.slice(i + 3, namedEnd).match(/(\w+)>/);
             var groupName = nameMatch ? nameMatch[1] : 'unknown';
-            fragments.push({ pat: pattern.slice(i, namedEnd + 1), desc: 'named capturing group "' + escHtml(groupName) + '"' });
+            fragments.push({
+              pat: pattern.slice(i, namedEnd + 1),
+              desc: 'named capturing group "' + escHtml(groupName) + '"',
+            });
             i = namedEnd + 1;
             continue;
           }
@@ -634,8 +692,14 @@
       if (c === '+' || c === '*' || c === '?') {
         if (fragments.length > 0) {
           var last = fragments[fragments.length - 1];
-          last.pat = last.pat + c;
-          last.desc = last.desc + ', ' + explainQuant(c);
+          var lastPatChar = last.pat.charAt(last.pat.length - 1);
+          if (c === '?' && (lastPatChar === '+' || lastPatChar === '*' || lastPatChar === '?')) {
+            last.pat = last.pat + c;
+            last.desc = last.desc.replace(/, [^,]+$/, '') + ', ' + explainQuant(lastPatChar + '?');
+          } else {
+            last.pat = last.pat + c;
+            last.desc = last.desc + ', ' + explainQuant(c);
+          }
         } else {
           fragments.push({ pat: c, desc: explainQuant(c) });
         }
@@ -646,13 +710,13 @@
       if (c === '{') {
         var braceEnd = pattern.indexOf('}', i);
         if (braceEnd > i) {
-          var quant = pattern.slice(i, braceEnd + 1);
+          var quantStr = pattern.slice(i, braceEnd + 1);
           if (fragments.length > 0) {
             var lastF = fragments[fragments.length - 1];
-            lastF.pat = lastF.pat + quant;
-            lastF.desc = lastF.desc + ', ' + explainQuant(quant);
+            lastF.pat = lastF.pat + quantStr;
+            lastF.desc = lastF.desc + ', ' + explainQuant(quantStr);
           } else {
-            fragments.push({ pat: quant, desc: explainQuant(quant) });
+            fragments.push({ pat: quantStr, desc: explainQuant(quantStr) });
           }
           i = braceEnd + 1;
           continue;
@@ -667,11 +731,17 @@
       i++;
     }
 
-    if (fragments.length === 0) return '<p class="rg-placeholder-text">Enter a pattern to see its explanation.</p>';
+    if (fragments.length === 0)
+      return '<p class="rg-placeholder-text">Enter a pattern to see its explanation.</p>';
 
     var html = '';
     fragments.forEach(function (f) {
-      html += '<div class="rg-explain-item"><span class="rg-explain-pat">' + escHtml(f.pat) + '</span><span class="rg-explain-desc">' + escHtml(f.desc) + '</span></div>';
+      html +=
+        '<div class="rg-explain-item"><span class="rg-explain-pat">' +
+        escHtml(f.pat) +
+        '</span><span class="rg-explain-desc">' +
+        escHtml(f.desc) +
+        '</span></div>';
     });
     return html;
   }
@@ -706,12 +776,15 @@
   }
 
   function checkCatastrophic(pattern) {
-    return CATASTROPHIC_PATTERNS.some(function (re) { return re.test(pattern); });
+    return CATASTROPHIC_PATTERNS.some(function (re) {
+      return re.test(pattern);
+    });
   }
 
   function renderGroupDetails(matches) {
     if (!matches || matches.length === 0) {
-      dom.groupDetails.innerHTML = '<p class="rg-placeholder-text">Matched groups will appear here.</p>';
+      dom.groupDetails.innerHTML =
+        '<p class="rg-placeholder-text">Matched groups will appear here.</p>';
       return;
     }
 
@@ -720,7 +793,10 @@
       for (var gi = 1; gi < match.length; gi++) {
         if (match[gi] !== undefined) {
           var colorIdx = Math.min(gi, GROUP_BORDER.length - 1);
-          html += '<div class="rg-group-row" style="border-left:3px solid ' + GROUP_BORDER[colorIdx] + ';padding-left:0.5rem;margin-bottom:0.25rem;">';
+          html +=
+            '<div class="rg-group-row" style="border-left:3px solid ' +
+            GROUP_BORDER[colorIdx] +
+            ';padding-left:0.5rem;margin-bottom:0.25rem;">';
           html += '<span class="rg-group-num">#' + (mi + 1) + ' G' + gi + '</span>';
           html += '<span class="rg-group-val">' + escHtml(match[gi]) + '</span>';
           html += '</div>';
@@ -776,7 +852,9 @@
   function savePatterns() {
     try {
       localStorage.setItem('rg_saved_patterns', JSON.stringify(state.savedPatterns));
-    } catch (e) {}
+    } catch (e) {
+      /* localStorage unavailable or full */
+    }
   }
 
   function renderSavedList() {
@@ -790,12 +868,22 @@
       item.className = 'rg-saved-item';
       item.innerHTML =
         '<div style="flex:1;min-width:0;">' +
-        '<div class="rg-saved-name">' + escHtml(sp.name) + '</div>' +
-        '<div class="rg-saved-pat">/' + escHtml(sp.pattern) + '/' + escHtml(sp.flags || '') + '</div>' +
+        '<div class="rg-saved-name">' +
+        escHtml(sp.name) +
+        '</div>' +
+        '<div class="rg-saved-pat">/' +
+        escHtml(sp.pattern) +
+        '/' +
+        escHtml(sp.flags || '') +
+        '</div>' +
         '</div>' +
         '<div class="rg-saved-actions">' +
-        '<button type="button" data-action="load" data-idx="' + idx + '" aria-label="Load pattern"><i class="fas fa-upload"></i></button>' +
-        '<button type="button" data-action="delete" data-idx="' + idx + '" aria-label="Delete pattern"><i class="fas fa-trash-can"></i></button>' +
+        '<button type="button" data-action="load" data-idx="' +
+        idx +
+        '" aria-label="Load pattern"><i class="fas fa-upload"></i></button>' +
+        '<button type="button" data-action="delete" data-idx="' +
+        idx +
+        '" aria-label="Delete pattern"><i class="fas fa-trash-can"></i></button>' +
         '</div>';
       dom.savedList.appendChild(item);
     });
@@ -825,7 +913,10 @@
 
   function handleSave() {
     var pattern = dom.patternInput.value;
-    if (!pattern) { showToast('Enter a pattern first'); return; }
+    if (!pattern) {
+      showToast('Enter a pattern first');
+      return;
+    }
     dom.saveName.value = pattern;
     dom.saveModal.hidden = false;
   }
@@ -835,8 +926,14 @@
     var pattern = dom.patternInput.value;
     var flags = dom.flagsInput.value;
     var test = dom.testInput.value;
-    if (!name) { showToast('Enter a name for the pattern'); return; }
-    if (!pattern) { showToast('Enter a pattern first'); return; }
+    if (!name) {
+      showToast('Enter a name for the pattern');
+      return;
+    }
+    if (!pattern) {
+      showToast('Enter a pattern first');
+      return;
+    }
     state.savedPatterns.push({ name: name, pattern: pattern, flags: flags, test: test });
     savePatterns();
     renderSavedList();
@@ -847,7 +944,10 @@
   function handleShare() {
     var pattern = dom.patternInput.value;
     var test = dom.testInput.value;
-    if (!pattern && !test) { showToast('Enter a pattern to share'); return; }
+    if (!pattern && !test) {
+      showToast('Enter a pattern to share');
+      return;
+    }
     var params = new URLSearchParams();
     if (pattern) params.set('p', pattern);
     var flags = dom.flagsInput.value;
@@ -855,11 +955,14 @@
     if (test) params.set('s', test);
     var url = window.location.origin + window.location.pathname + '?' + params.toString();
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(function () {
-        showToast('URL copied to clipboard!');
-      }).catch(function () {
-        fallbackCopy(url);
-      });
+      navigator.clipboard
+        .writeText(url)
+        .then(function () {
+          showToast('URL copied to clipboard!');
+        })
+        .catch(function () {
+          fallbackCopy(url);
+        });
     } else {
       fallbackCopy(url);
     }
@@ -893,12 +996,19 @@
   function saveExerciseProgress() {
     try {
       localStorage.setItem('rg_exercise_progress', JSON.stringify(state.exerciseCompleted));
-    } catch (e) {}
+    } catch (e) {
+      /* localStorage unavailable or full */
+    }
   }
 
   function renderExercises(filterLevel) {
     filterLevel = filterLevel || 'all';
-    var filtered = filterLevel === 'all' ? EXERCISES : EXERCISES.filter(function (e) { return e.level === filterLevel; });
+    var filtered =
+      filterLevel === 'all'
+        ? EXERCISES
+        : EXERCISES.filter(function (e) {
+            return e.level === filterLevel;
+          });
     var completed = 0;
     var html = '';
     filtered.forEach(function (ex) {
@@ -907,7 +1017,8 @@
       html += '<div class="rg-ex-card">';
       html += '<div class="rg-ex-card-header">';
       html += '<span class="rg-ex-level ' + ex.level + '">' + ex.level + '</span>';
-      if (isDone) html += '<span class="rg-ex-completed"><i class="fas fa-check-circle"></i> Done</span>';
+      if (isDone)
+        html += '<span class="rg-ex-completed"><i class="fas fa-check-circle"></i> Done</span>';
       html += '</div>';
       html += '<h4 class="rg-ex-title">' + escHtml(ex.title) + '</h4>';
       html += '<p class="rg-ex-desc">' + escHtml(ex.desc) + '</p>';
@@ -915,21 +1026,31 @@
       if (isDone) {
         html += '<div class="rg-ex-pattern">/' + escHtml(ex.answer) + '/</div>';
       } else {
-        html += '<div class="rg-ex-pattern" style="color:var(--rg-muted);font-style:italic;">Pattern hidden — try it!</div>';
+        html +=
+          '<div class="rg-ex-pattern" style="color:var(--rg-muted);font-style:italic;">Pattern hidden — try it!</div>';
       }
       html += '<div class="rg-ex-actions">';
-      html += '<button type="button" class="rg-btn rg-btn-primary rg-btn-sm rg-ex-try" data-id="' + ex.id + '" data-answer="' + escHtml(ex.answer) + '" data-test="' + escHtml(ex.test) + '"><i class="fas fa-play"></i> Try</button>';
+      html +=
+        '<button type="button" class="rg-btn rg-btn-primary rg-btn-sm rg-ex-try" data-id="' +
+        ex.id +
+        '" data-answer="' +
+        escHtml(ex.answer) +
+        '" data-test="' +
+        escHtml(ex.test) +
+        '"><i class="fas fa-play"></i> Try</button>';
       if (!isDone) {
-        html += '<button type="button" class="rg-btn rg-btn-ghost rg-btn-sm rg-ex-reveal" data-id="' + ex.id + '"><i class="fas fa-eye"></i> Show</button>';
+        html +=
+          '<button type="button" class="rg-btn rg-btn-ghost rg-btn-sm rg-ex-reveal" data-id="' +
+          ex.id +
+          '"><i class="fas fa-eye"></i> Show</button>';
       }
       html += '</div>';
       html += '</div>';
     });
-    dom.exGrid.innerHTML = html || '<p class="rg-placeholder-text">No exercises for this level.</p>';
+    dom.exGrid.innerHTML =
+      html || '<p class="rg-placeholder-text">No exercises for this level.</p>';
 
-    var total = filterLevel === 'all' ? EXERCISES.length : filtered.length;
-    var totalCompleted = Object.keys(state.exerciseCompleted).length;
-    dom.exProgress.textContent = totalCompleted + ' / ' + EXERCISES.length + ' completed';
+    dom.exProgress.textContent = completed + ' / ' + filtered.length + ' completed';
   }
 
   function handleExerciseClick(e) {
@@ -956,7 +1077,12 @@
 
   function renderPatterns(filterCat) {
     filterCat = filterCat || 'all';
-    var filtered = filterCat === 'all' ? PATTERNS : PATTERNS.filter(function (p) { return p.category === filterCat; });
+    var filtered =
+      filterCat === 'all'
+        ? PATTERNS
+        : PATTERNS.filter(function (p) {
+            return p.category === filterCat;
+          });
     var html = '';
     filtered.forEach(function (p) {
       html += '<div class="rg-pat-card">';
@@ -967,12 +1093,21 @@
       html += '<p class="rg-pat-desc">' + escHtml(p.desc) + '</p>';
       html += '<pre class="rg-pat-code">' + escHtml(p.pattern) + '</pre>';
       html += '<div class="rg-pat-actions">';
-      html += '<button type="button" class="rg-btn rg-btn-primary rg-btn-sm rg-pat-use" data-pattern="' + escHtml(p.pattern) + '" data-test="' + escHtml(p.test) + '"><i class="fas fa-play"></i> Use</button>';
-      html += '<button type="button" class="rg-btn rg-btn-ghost rg-btn-sm rg-pat-copy" data-pattern="' + escHtml(p.pattern) + '"><i class="fas fa-copy"></i> Copy</button>';
+      html +=
+        '<button type="button" class="rg-btn rg-btn-primary rg-btn-sm rg-pat-use" data-pattern="' +
+        escHtml(p.pattern) +
+        '" data-test="' +
+        escHtml(p.test) +
+        '"><i class="fas fa-play"></i> Use</button>';
+      html +=
+        '<button type="button" class="rg-btn rg-btn-ghost rg-btn-sm rg-pat-copy" data-pattern="' +
+        escHtml(p.pattern) +
+        '"><i class="fas fa-copy"></i> Copy</button>';
       html += '</div>';
       html += '</div>';
     });
-    dom.patGrid.innerHTML = html || '<p class="rg-placeholder-text">No patterns in this category.</p>';
+    dom.patGrid.innerHTML =
+      html || '<p class="rg-placeholder-text">No patterns in this category.</p>';
   }
 
   function handlePatternClick(e) {
@@ -991,17 +1126,20 @@
       var origHtml = copyBtn.innerHTML;
       copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied';
       copyBtn.disabled = true;
-      function doCopy() {
+      (function doCopy() {
         if (navigator.clipboard) {
-          navigator.clipboard.writeText(text).then(function () {
-            setTimeout(function () {
+          navigator.clipboard
+            .writeText(text)
+            .then(function () {
+              setTimeout(function () {
+                copyBtn.innerHTML = origHtml;
+                copyBtn.disabled = false;
+              }, 1800);
+            })
+            .catch(function () {
               copyBtn.innerHTML = origHtml;
               copyBtn.disabled = false;
-            }, 1800);
-          }).catch(function () {
-            copyBtn.innerHTML = origHtml;
-            copyBtn.disabled = false;
-          });
+            });
         } else {
           fallbackCopy(text);
           setTimeout(function () {
@@ -1009,15 +1147,14 @@
             copyBtn.disabled = false;
           }, 1800);
         }
-      }
-      doCopy();
+      })();
     }
   }
 
   var stateCounter = 0;
 
   function NFAState(isEnd) {
-    this.id = 'S' + (stateCounter++);
+    this.id = 'S' + stateCounter++;
     this.isEnd = !!isEnd;
     this.transitions = {};
   }
@@ -1185,21 +1322,77 @@
 
   function renderNfaGraph(graphData) {
     dom.nfaEmpty.style.display = 'none';
-    if (nfaCy) { nfaCy.destroy(); nfaCy = null; }
-    if (typeof cytoscape !== 'undefined' && typeof dagre !== 'undefined' && typeof cytoscapeDagre !== 'undefined') {
+    if (nfaCy) {
+      nfaCy.destroy();
+      nfaCy = null;
+    }
+    if (
+      typeof cytoscape !== 'undefined' &&
+      typeof dagre !== 'undefined' &&
+      typeof cytoscapeDagre !== 'undefined'
+    ) {
       cytoscape.use(cytoscapeDagre);
     }
     nfaCy = cytoscape({
       container: dom.nfaCy,
       elements: { nodes: graphData.nodes, edges: graphData.edges },
       style: [
-        { selector: 'node', style: { 'background-color': '#1e293b', 'border-width': 2, 'border-color': '#64748b', label: 'data(label)', color: '#f8fafc', 'text-valign': 'center', 'text-halign': 'center', 'font-family': 'JetBrains Mono, monospace', 'font-size': '11px', width: 36, height: 36, 'transition-property': 'background-color, border-color', 'transition-duration': '0.2s' } },
-        { selector: 'node[?isStart]', style: { 'background-color': '#93c5fd', 'border-color': '#bfdbfe' } },
-        { selector: 'node[?isEnd]', style: { 'border-style': 'double', 'border-width': 4, 'border-color': '#6ee7b7' } },
-        { selector: '.active-state', style: { 'background-color': '#fda4af', 'border-color': '#fecdd3', 'box-shadow': '0 0 12px #fda4af' } },
-        { selector: 'edge', style: { width: 2, 'line-color': '#475569', 'target-arrow-color': '#475569', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', label: 'data(label)', color: '#93c5fd', 'font-family': 'JetBrains Mono, monospace', 'font-size': '11px', 'text-background-opacity': 1, 'text-background-color': '#020617', 'text-background-padding': 2 } },
+        {
+          selector: 'node',
+          style: {
+            'background-color': '#1e293b',
+            'border-width': 2,
+            'border-color': '#64748b',
+            label: 'data(label)',
+            color: '#f8fafc',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'font-family': 'JetBrains Mono, monospace',
+            'font-size': '11px',
+            width: 36,
+            height: 36,
+            'transition-property': 'background-color, border-color',
+            'transition-duration': '0.2s',
+          },
+        },
+        {
+          selector: 'node[?isStart]',
+          style: { 'background-color': '#93c5fd', 'border-color': '#bfdbfe' },
+        },
+        {
+          selector: 'node[?isEnd]',
+          style: { 'border-style': 'double', 'border-width': 4, 'border-color': '#6ee7b7' },
+        },
+        {
+          selector: '.active-state',
+          style: {
+            'background-color': '#fda4af',
+            'border-color': '#fecdd3',
+            'box-shadow': '0 0 12px #fda4af',
+          },
+        },
+        {
+          selector: 'edge',
+          style: {
+            width: 2,
+            'line-color': '#475569',
+            'target-arrow-color': '#475569',
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier',
+            label: 'data(label)',
+            color: '#93c5fd',
+            'font-family': 'JetBrains Mono, monospace',
+            'font-size': '11px',
+            'text-background-opacity': 1,
+            'text-background-color': '#020617',
+            'text-background-padding': 2,
+          },
+        },
         { selector: 'edge[label="\u03B5"]', style: { 'line-style': 'dashed', color: '#c4b5fd' } },
-        { selector: '.active-edge', style: { 'line-color': '#fda4af', 'target-arrow-color': '#fda4af', width: 3 } },
+        {
+          selector: '.active-edge',
+          style: { 'line-color': '#fda4af', 'target-arrow-color': '#fda4af', width: 3 },
+        },
       ],
       layout: { name: 'dagre', rankDir: 'LR', nodeSep: 40, edgeSep: 8, rankSep: 70 },
       userZoomingEnabled: true,
@@ -1271,7 +1464,13 @@
       if (state.transitions[charToConsume]) {
         state.transitions[charToConsume].forEach(function (nextState) {
           nextStates.add(nextState);
-          var edge = nfaGraphData.edges.find(function (e) { return e.data.source === state.id && e.data.target === nextState.id && e.data.label === charToConsume; });
+          var edge = nfaGraphData.edges.find(function (e) {
+            return (
+              e.data.source === state.id &&
+              e.data.target === nextState.id &&
+              e.data.label === charToConsume
+            );
+          });
           if (edge) activeEdges.push(edge.data.id);
         });
       }
@@ -1282,12 +1481,17 @@
       charEls[nfaSimState.currentIndex].classList.add('consumed');
     }
     nfaSimState.currentIndex++;
-    if (nfaSimState.currentIndex < nfaSimState.testString.length && charEls[nfaSimState.currentIndex]) {
+    if (
+      nfaSimState.currentIndex < nfaSimState.testString.length &&
+      charEls[nfaSimState.currentIndex]
+    ) {
       charEls[nfaSimState.currentIndex].classList.add('active');
     }
     if (nfaCy) {
       nfaCy.edges().removeClass('active-edge');
-      activeEdges.forEach(function (id) { nfaCy.getElementById(id).addClass('active-edge'); });
+      activeEdges.forEach(function (id) {
+        nfaCy.getElementById(id).addClass('active-edge');
+      });
       setTimeout(function () {
         if (nfaCy) nfaCy.edges().removeClass('active-edge');
       }, 500);
@@ -1302,7 +1506,13 @@
         dom.nfaStep.disabled = true;
         checkNfaVerdict();
       } else {
-        setNfaVerdict('processing', '<i class="fas fa-cog fa-spin"></i> Consumed \'' + charToConsume + '\'. Active: ' + nfaSimState.activeStates.size);
+        setNfaVerdict(
+          'processing',
+          '<i class="fas fa-cog fa-spin"></i> Consumed \'' +
+            charToConsume +
+            "'. Active: " +
+            nfaSimState.activeStates.size
+        );
       }
     }
   }
@@ -1321,7 +1531,10 @@
 
   function handleNfaCompile() {
     var raw = dom.nfaPattern.value.trim();
-    if (!raw) { nfaLog('Enter a regex pattern.', 'error'); return; }
+    if (!raw) {
+      nfaLog('Enter a regex pattern.', 'error');
+      return;
+    }
     dom.nfaLogs.innerHTML = '';
     nfaLog('Compiling: ' + raw);
     try {
@@ -1332,7 +1545,14 @@
       var nfa = compileNFA(postfix);
       nfaLog('NFA compiled successfully.', 'success');
       nfaGraphData = extractGraphData(nfa);
-      nfaLog('Graph: ' + nfaGraphData.nodes.length + ' states, ' + nfaGraphData.edges.length + ' transitions.', 'success');
+      nfaLog(
+        'Graph: ' +
+          nfaGraphData.nodes.length +
+          ' states, ' +
+          nfaGraphData.edges.length +
+          ' transitions.',
+        'success'
+      );
       renderNfaGraph(nfaGraphData);
       dom.nfaString.disabled = false;
       dom.nfaReset.disabled = false;
@@ -1424,7 +1644,7 @@
     });
 
     dom.testInput.addEventListener('scroll', function () {
-      dom.highlightOverlay.style.transform = 'translateY(' + (-this.scrollTop) + 'px)';
+      dom.highlightOverlay.style.transform = 'translateY(' + -this.scrollTop + 'px)';
     });
 
     loadSavedPatterns();
@@ -1447,5 +1667,4 @@
   } else {
     init();
   }
-
 })();
