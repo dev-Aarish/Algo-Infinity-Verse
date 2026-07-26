@@ -77,9 +77,17 @@ self.onmessage = function(e) {
             appendLog("log", formatValue(result));
         }
         
-        self.postMessage({ success: true, logs });
+        try {
+            self.postMessage({ success: true, logs });
+        } catch (pmError) {
+            self.postMessage({ success: false, error: "postMessage failed: " + pmError.message, logs: [] });
+        }
     } catch (error) {
-        self.postMessage({ success: false, error: error.name + ": " + error.message, logs });
+        try {
+            self.postMessage({ success: false, error: error.name + ": " + error.message, logs });
+        } catch (pmError) {
+            self.postMessage({ success: false, error: error.name + ": " + error.message + " (postMessage failed: " + pmError.message + ")", logs: [] });
+        }
     } finally {
         console.log = originalConsole.log;
         console.warn = originalConsole.warn;

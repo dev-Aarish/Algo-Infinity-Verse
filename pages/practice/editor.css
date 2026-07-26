@@ -718,6 +718,10 @@ html, body {
   border-color: rgba(243, 139, 168, 0.4);
 }
 
+.test-case.error {
+  border-color: rgba(249, 226, 175, 0.4);
+}
+
 .test-case-header {
   display: flex;
   align-items: center;
@@ -751,6 +755,11 @@ html, body {
 .test-case-status.pending {
   background: rgba(108, 112, 134, 0.15);
   color: var(--editor-text-secondary);
+}
+
+.test-case-status.error {
+  background: rgba(249, 226, 175, 0.15);
+  color: var(--editor-warning);
 }
 
 .test-case-details {
@@ -853,6 +862,30 @@ html, body {
 
 .output-metrics i {
   margin-right: 4px;
+}
+
+/* ─── Running Indicator ─── */
+.results-running-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(137, 180, 250, 0.08);
+  border-bottom: 1px solid var(--editor-border);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--editor-accent);
+  animation: editor-soft-blink 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes editor-soft-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.results-running-bar i {
+  font-size: 0.85rem;
 }
 
 /* ─── Toast ─── */

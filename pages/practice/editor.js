@@ -54,12 +54,15 @@ function cacheDOM() {
   dom.testCasesContainer = $('testCasesContainer');
   dom.testCasesPassed = $('testCasesPassed');
   dom.testCasesTotal = $('testCasesTotal');
+  dom.testCasesSummary = $('testCasesSummary');
   dom.outputContent = $('outputContent');
   dom.outputMetrics = $('outputMetrics');
   dom.cpuTime = $('cpuTime');
   dom.memUsage = $('memUsage');
   dom.outputClearBtn = $('outputClearBtn');
   dom.outputBadge = $('outputBadge');
+  dom.runningIndicator = $('runningIndicator');
+  dom.runningIndicatorText = $('runningIndicatorText');
   dom.toastContainer = $('toastContainer');
   dom.problemDescTitle = $('problemDescTitle');
   dom.problemTopicBadge = $('problemTopicBadge');
@@ -388,15 +391,19 @@ async function handleRun(problem) {
   dom.runBtn.disabled = true;
   dom.submitBtn.disabled = true;
 
+  // Show running indicator
+  dom.runningIndicator.style.display = 'flex';
+  dom.runningIndicatorText.textContent = 'Running code...';
+
   // Switch to output tab
   switchTab('output');
-  dom.outputContent.innerHTML = '<pre class="output-running">⏳ Running code...</pre>';
+  dom.outputContent.innerHTML = '';
   dom.outputMetrics.classList.add('hidden');
 
-  // Show test cases as pending
-  renderTestCasesPending(problem.testCases || []);
-
   try {
+    // Show test cases as pending
+    renderTestCasesPending(problem.testCases || []);
+
     const result = await executeProblem({
       code,
       lang: state.lang,
@@ -411,17 +418,18 @@ async function handleRun(problem) {
     renderOutput(result);
 
     if (result.allPassed) {
-      showToast('✅ All tests passed!', 'success');
+      showToast('<i class="fas fa-check-circle"></i> All tests passed!', 'success');
     } else {
       const failures = (result.testResults || []).filter((r) => r && !r.passed);
-      showToast(`❌ ${failures.length} test(s) failed`, 'error');
+      showToast(`<i class="fas fa-times-circle"></i> ${failures.length} test(s) failed`, 'error');
       dom.outputBadge.classList.remove('hidden');
     }
   } catch (err) {
-    dom.outputContent.innerHTML = `<pre class="output-error">❌ Error:\n${escapeHtml(err.message)}</pre>`;
+    dom.outputContent.innerHTML = `<pre class="output-error"><i class="fas fa-times-circle"></i> Error:\n${escapeHtml(err.message)}</pre>`;
     showToast('Execution error: ' + err.message, 'error');
   } finally {
     state.running = false;
+    dom.runningIndicator.style.display = 'none';
     dom.runBtn.disabled = false;
     dom.submitBtn.disabled = false;
   }
@@ -447,13 +455,16 @@ async function handleSubmit(problem) {
   dom.submitBtn.disabled = true;
   dom.runBtn.disabled = true;
 
+  dom.runningIndicator.style.display = 'flex';
+  dom.runningIndicatorText.textContent = 'Running tests...';
+
   switchTab('output');
-  dom.outputContent.innerHTML = '<pre class="output-running">⏳ Running tests...</pre>';
+  dom.outputContent.innerHTML = '';
   dom.outputMetrics.classList.add('hidden');
 
-  renderTestCasesPending(problem.testCases || []);
-
   try {
+    renderTestCasesPending(problem.testCases || []);
+
     const result = await executeProblem({
       code,
       lang: state.lang,
@@ -489,17 +500,18 @@ async function handleSubmit(problem) {
         };
       }
 
-      showToast('🎉 Problem solved! XP earned.', 'success');
+      showToast('<i class="fas fa-star"></i> Problem solved! XP earned.', 'success');
     } else {
       const failures = (result.testResults || []).filter((r) => r && !r.passed);
-      showToast(`❌ ${failures.length} test(s) failed. Keep trying!`, 'error');
+      showToast(`<i class="fas fa-times-circle"></i> ${failures.length} test(s) failed. Keep trying!`, 'error');
       dom.outputBadge.classList.remove('hidden');
     }
   } catch (err) {
-    dom.outputContent.innerHTML = `<pre class="output-error">❌ Error:\n${escapeHtml(err.message)}</pre>`;
+    dom.outputContent.innerHTML = `<pre class="output-error"><i class="fas fa-times-circle"></i> Error:\n${escapeHtml(err.message)}</pre>`;
     showToast('Submission error: ' + err.message, 'error');
   } finally {
     state.running = false;
+    dom.runningIndicator.style.display = 'none';
     dom.submitBtn.disabled = false;
     dom.runBtn.disabled = false;
   }
@@ -522,7 +534,7 @@ function renderTestCasesPending(testCases) {
         <div class="test-case" id="tc-${i}">
           <div class="test-case-header">
             <span class="test-case-name">Test ${i + 1}</span>
-            <span class="test-case-status pending">⏳ Pending</span>
+            <span class="test-case-status pending"><i class="fas fa-hourglass-half"></i> Pending</span>
           </div>
           <div class="test-case-details">
             <div>Input: <code>${formatInput(tc.input)}</code></div>
@@ -555,27 +567,28 @@ function renderTestResults(result) {
   dom.testCasesContainer.innerHTML = testResults
     .map((r, i) => {
       if (!r) return '';
-      const statusClass = r.passed ? 'passed' : 'failed';
-      const icon = r.passed ? '✓' : '✗';
-      const label = r.passed ? 'PASS' : 'FAIL';
+      const hasError = r.error && !r.ran;
+      const statusClass = hasError ? 'error' : (r.passed ? 'passed' : 'failed');
+      const icon = r.passed ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>';
+      const label = r.passed ? 'PASS' : (hasError ? 'ERROR' : 'FAIL');
       const tc = testCases[i] || {};
       const actualStr =
         r.actual !== undefined && r.actual !== null ? JSON.stringify(r.actual) : '';
       const errorStr = r.error || '';
 
       return `
-        <div class="test-case ${r.ran ? statusClass : ''}" id="tc-${i}">
+        <div class="test-case ${r.ran ? statusClass : 'error'}" id="tc-${i}">
           <div class="test-case-header">
             <span class="test-case-name">Test ${i + 1}</span>
-            <span class="test-case-status ${r.ran ? statusClass : 'pending'}">
-              ${r.ran ? `${icon} ${label}` : '⏳ Pending'}
+            <span class="test-case-status ${r.ran ? statusClass : 'error'}">
+              ${r.ran ? `${icon} ${label}` : `<i class="fas fa-exclamation-triangle"></i> ${label}`}
             </span>
           </div>
           <div class="test-case-details">
             <div>Input: <code>${formatInput(tc.input)}</code></div>
             <div>Expected: <code>${JSON.stringify(tc.expected || '')}</code></div>
-            ${r.ran && r.passed !== undefined
-              ? `<div class="test-case-actual${!r.passed ? ' error' : ''}">Actual: <code>${actualStr || errorStr || 'N/A'}</code></div>`
+            ${(r.ran || hasError) && r.passed !== undefined
+              ? `<div class="test-case-actual error">Actual: <code>${actualStr || errorStr || 'N/A'}</code></div>`
               : ''}
           </div>
         </div>
@@ -589,11 +602,11 @@ function renderOutput(result) {
   const allPassed = result.allPassed;
 
   if (allPassed) {
-    dom.outputContent.innerHTML = `<pre class="output-success">✅ All tests passed!\n\n${rawOutput ? 'Console output:\n' + escapeHtml(rawOutput) : ''}</pre>`;
+    dom.outputContent.innerHTML = `<pre class="output-success"><i class="fas fa-check-circle"></i> All tests passed!\n\n${rawOutput ? 'Console output:\n' + escapeHtml(rawOutput) : ''}</pre>`;
   } else if (rawOutput) {
     dom.outputContent.innerHTML = `<pre>${escapeHtml(rawOutput)}</pre>`;
   } else {
-    dom.outputContent.innerHTML = '<pre class="output-error">❌ Tests failed. Check the Test Cases tab for details.</pre>';
+    dom.outputContent.innerHTML = '<pre class="output-error"><i class="fas fa-times-circle"></i> Tests failed. Check the Test Cases tab for details.</pre>';
   }
 
   // Metrics

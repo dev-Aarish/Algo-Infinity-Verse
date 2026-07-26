@@ -386,7 +386,7 @@ export function parseTestResults(stdout, testCount) {
       return { allPassed, testResults, rawOutput: raw };
     } catch { /* fall through */ }
   }
-  return { allPassed: false, testResults: Array.from({ length: testCount }, () => ({ ran: false, passed: false, error: 'No test result marker found' })), rawOutput: stdout };
+  return { allPassed: false, testResults: Array.from({ length: testCount }, () => ({ ran: true, passed: false, error: 'No test result marker found' })), rawOutput: stdout };
 }
 
 export function getProblemSignature(problem) {

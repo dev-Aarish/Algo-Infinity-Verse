@@ -49,8 +49,22 @@ export async function executeProblem({ code, lang, problem, timeoutMs = DEFAULT_
   }
 
   const normalLang = lang?.toLowerCase() || 'javascript';
-  const harnessCode = buildHarness(code, normalLang, problem);
   const testCount = problem.testCases.length;
+
+  let harnessCode;
+  try {
+    harnessCode = buildHarness(code, normalLang, problem);
+  } catch (buildErr) {
+    return {
+      allPassed: false,
+      testResults: Array.from({ length: testCount }, () => ({
+        ran: true,
+        passed: false,
+        error: 'Failed to build test harness: ' + buildErr.message,
+      })),
+      rawOutput: 'Failed to build test harness: ' + buildErr.message,
+    };
+  }
 
   try {
     if (BROWSER_EXECUTABLE_LANGUAGES.includes(normalLang)) {
@@ -75,7 +89,7 @@ export async function executeProblem({ code, lang, problem, timeoutMs = DEFAULT_
       return {
         allPassed: false,
         testResults: Array.from({ length: testCount }, () => ({
-          ran: false,
+          ran: true,
           passed: false,
           error: 'Execution cancelled',
         })),
@@ -85,7 +99,7 @@ export async function executeProblem({ code, lang, problem, timeoutMs = DEFAULT_
     return {
       allPassed: false,
       testResults: Array.from({ length: testCount }, () => ({
-        ran: false,
+        ran: true,
         passed: false,
         error: err.message,
       })),
