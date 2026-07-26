@@ -1608,7 +1608,7 @@ on:
           </div>
         `,
         defaultCommands: [
-          'echo \'name: Matrix Test\non: [push]\njobs:\n  test:\n    strategy:\n      matrix:\n        version: [18, 20]\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: \${{ matrix.version }}\n      - run: echo "Testing on Node \${{ matrix.version }}"\' > .github/workflows/matrix.yml',
+          'echo \'name: Matrix Test\non: [push]\njobs:\n  test:\n    strategy:\n      matrix:\n        version: [18, 20]\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: ${{ matrix.version }}\n      - run: echo "Testing on Node ${{ matrix.version }}"\' > .github/workflows/matrix.yml',
         ],
         takeaways: [
           'Build matrices test across multiple OS/version combinations simultaneously',
