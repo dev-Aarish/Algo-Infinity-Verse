@@ -143,6 +143,7 @@ const practiceTools = [
   { name: "Algorithm Graveyard", path: "/pages/tools/algorithm-graveyard/algorithm-graveyard.html", category: "Learning Tools", icon: "fa-skull", desc: "Explore deprecated algorithms, their fatal flaws, and their modern replacements." },
   { name: "Algorithm Mythology", path: "/pages/tools/algorithm-mythology/algorithm-mythology.html", category: "Learning Tools", icon: "fa-book", desc: "Discover the stories, folklore, and historical context behind famous algorithms." },
   { name: "Cross Topic Trainer", path: "/pages/tools/cross-topic-trainer/cross-topic-trainer.html", category: "Learning Tools", icon: "fa-shuffle", desc: "Explore connections between different DSA topics to build a holistic understanding." },
+  { name: "Regex Playground", path: "/pages/tools/regex-playground/regex-playground.html", category: "Learning Tools", icon: "fa-code", desc: "Master regex through live matching, 15 guided exercises, auto-generated explanations, NFA visualization, and a DSA pattern library." },
 
   // ── Debugging ──
   { name: "Dry Run Simulator", path: "/pages/tools/dry-run-simulator/dry-run-simulator.html", category: "Debugging", icon: "fa-play", desc: "Step through your code execution line by line to trace variables and find bugs." },
