@@ -64,6 +64,9 @@ function cacheDOM() {
   dom.runningIndicator = $('runningIndicator');
   dom.runningIndicatorText = $('runningIndicatorText');
   dom.toastContainer = $('toastContainer');
+  dom.resetModal = $('resetModal');
+  dom.resetModalCancel = $('resetModalCancel');
+  dom.resetModalConfirm = $('resetModalConfirm');
   dom.problemDescTitle = $('problemDescTitle');
   dom.problemTopicBadge = $('problemTopicBadge');
   dom.problemDifficultyBadge = $('problemDifficultyBadge');
@@ -285,14 +288,14 @@ function wireEvents(problem) {
   dom.submitBtn.addEventListener('click', () => handleSubmit(problem));
 
   // Reset
-  dom.resetBtn.addEventListener('click', () => {
-    if (confirm('Reset to starter code? Your current code will be lost.')) {
-      const starter = getStarterCode(state.lang, problem);
-      state.editor.setValue(starter);
-      clearDraft(problem.id, state.lang);
-      clearResults();
-      showToast('Reset to starter code', 'info');
-    }
+  dom.resetBtn.addEventListener('click', async () => {
+    const confirmed = await showConfirmModal('Your current code will be lost.');
+    if (!confirmed) return;
+    const starter = getStarterCode(state.lang, problem);
+    state.editor.setValue(starter);
+    clearDraft(problem.id, state.lang);
+    clearResults();
+    showToast('Reset to starter code', 'info');
   });
 
   // Theme toggle
@@ -725,6 +728,35 @@ function preloadPyodide() {
   } catch {
     // Pyodide preload failure is non-critical
   }
+}
+
+// ─── Confirm Modal ───
+function showConfirmModal(message) {
+  return new Promise((resolve) => {
+    const overlay = dom.resetModal;
+    const msgEl = overlay.querySelector('.editor-modal-msg');
+    msgEl.textContent = message;
+
+    overlay.hidden = false;
+
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onConfirm = () => { cleanup(); resolve(true); };
+    const onKeydown = (e) => { if (e.key === 'Escape') onCancel(); };
+    const onOverlay = (e) => { if (e.target === overlay) onCancel(); };
+
+    const cleanup = () => {
+      overlay.hidden = true;
+      dom.resetModalCancel.removeEventListener('click', onCancel);
+      dom.resetModalConfirm.removeEventListener('click', onConfirm);
+      overlay.removeEventListener('click', onOverlay);
+      document.removeEventListener('keydown', onKeydown);
+    };
+
+    dom.resetModalCancel.addEventListener('click', onCancel);
+    dom.resetModalConfirm.addEventListener('click', onConfirm);
+    overlay.addEventListener('click', onOverlay);
+    document.addEventListener('keydown', onKeydown);
+  });
 }
 
 // ─── Toast Notifications ───

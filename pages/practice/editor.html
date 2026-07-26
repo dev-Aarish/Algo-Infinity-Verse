@@ -236,6 +236,21 @@
     <!-- Error toast container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
+    <!-- Reset confirmation modal -->
+    <div id="resetModal" class="editor-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle" hidden>
+      <div class="editor-modal-dialog">
+        <div class="editor-modal-header">
+          <i class="fas fa-undo editor-modal-icon"></i>
+          <h3 id="resetModalTitle" class="editor-modal-title">Reset code?</h3>
+        </div>
+        <p class="editor-modal-msg">Your current code will be lost.</p>
+        <div class="editor-modal-actions">
+          <button type="button" class="editor-modal-btn editor-modal-btn-cancel" id="resetModalCancel">Cancel</button>
+          <button type="button" class="editor-modal-btn editor-modal-btn-confirm" id="resetModalConfirm">Reset</button>
+        </div>
+      </div>
+    </div>
+
     <script src="/data/practice-problems.js"></script>
     <script src="/auth.js"></script>
     <script src="/theme.js"></script>
