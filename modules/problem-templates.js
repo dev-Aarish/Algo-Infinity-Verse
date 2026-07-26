@@ -123,7 +123,7 @@ export function buildHarness(userCode, lang, problem) {
   const testCases = problem.testCases;
   const isClass = /^[A-Z]/.test(functionName);
   switch (lang) {
-    case 'javascript': return buildJsHarness(userCode, functionName, testCases, isClass);
+    case 'javascript': return buildJsHarness(userCode, functionName, testCases, isClass, problem);
     case 'python': return buildPythonHarness(userCode, functionName, testCases, isClass);
     case 'cpp': return buildCppHarness(userCode, functionName, testCases, isClass);
     case 'java': return buildJavaHarness(userCode, functionName, testCases, isClass);
@@ -133,18 +133,49 @@ export function buildHarness(userCode, lang, problem) {
   }
 }
 
-function buildJsHarness(code, fn, tcs, isClass) {
+function buildJsHarness(code, fn, tcs, isClass, problem) {
   const tcJson = JSON.stringify(tcs);
   const clsCheck = isClass ? 'true' : 'false';
-  return code +
+  const isLL = !isClass && problem?.category === 'linkedlist';
+
+  let preamble = '';
+  let inpConv = '';
+  let resultConv = 'result';
+  let actualExpr = 'result';
+
+  if (isLL) {
+    preamble = `
+
+function __arrayToList(arr) {
+  if (!arr || arr.length === 0) return null;
+  const head = {val:arr[0],next:null};
+  let prev = head;
+  for (let i = 1; i < arr.length; i++) { const n = {val:arr[i],next:null}; prev.next = n; prev = n; }
+  return head;
+}
+function __listToArray(head) {
+  const res = [];
+  for (let cur = head; cur; cur = cur.next) res.push(cur.val);
+  return res;
+}
+function __isListNode(v) {
+  return v && typeof v === 'object' && 'val' in v && 'next' in v;
+}`;
+    inpConv = '    const __inp = tc.input.map(v => Array.isArray(v) ? __arrayToList(v) : v);\n';
+    resultConv = '__isListNode(result) ? __listToArray(result) : result';
+    actualExpr = resultConv;
+  }
+
+  return code + preamble +
     '\n\nconst __TC__ = ' + tcJson + ';\n' +
     'const __RES__ = [];\n' +
     'for (let i = 0; i < __TC__.length; i++) {\n' +
     '  const tc = __TC__[i];\n' +
     '  try {\n' +
     '    let result;\n' +
+    inpConv +
     '    if (' + clsCheck + ') {\n' +
-    '      const instance = new ' + fn + '(...tc.input);\n' +
+    '      const instance = new ' + fn + '(...' + (isLL ? '__inp' : 'tc.input') + ');\n' +
     '      if (tc.methods && Array.isArray(tc.methods)) {\n' +
     '        result = instance;\n' +
     '        for (const m of tc.methods) {\n' +
@@ -154,10 +185,10 @@ function buildJsHarness(code, fn, tcs, isClass) {
     '        result = instance;\n' +
     '      }\n' +
     '    } else {\n' +
-    '      result = ' + fn + '(...tc.input);\n' +
+    '      result = ' + fn + '(...' + (isLL ? '__inp' : 'tc.input') + ');\n' +
     '    }\n' +
-    '    const passed = ' + clsCheck + ' ? (tc.methods ? JSON.stringify(result) === JSON.stringify(tc.expected) : true) : JSON.stringify(result) === JSON.stringify(tc.expected);\n' +
-    '    __RES__.push({ index: i, ran: true, passed, actual: ' + clsCheck + ' ? (tc.methods ? result : "instance") : result, expected: tc.expected, input: tc.input, error: null });\n' +
+    '    const passed = ' + clsCheck + ' ? (tc.methods ? JSON.stringify(result) === JSON.stringify(tc.expected) : true) : JSON.stringify(' + resultConv + ') === JSON.stringify(tc.expected);\n' +
+    '    __RES__.push({ index: i, ran: true, passed, actual: ' + (clsCheck === 'true' ? '(tc.methods ? result : "instance")' : actualExpr) + ', expected: tc.expected, input: tc.input, error: null });\n' +
     '  } catch (e) {\n' +
     '    __RES__.push({ index: i, ran: true, passed: false, actual: null, expected: tc.expected, input: tc.input, error: e.message });\n' +
     '  }\n' +
@@ -175,13 +206,14 @@ function buildPythonHarness(code, fn, tcs, isClass) {
     '__RES__ = []\n' +
     'for i, tc in enumerate(__TC__):\n' +
     '    try:\n' +
-    '        instance = ' + fn + '(*tc["input"])\n' +
-    '        if ' + clsCheck + ' and tc.get("methods"):\n' +
-    '            result = instance\n' +
-    '            for m in tc["methods"]:\n' +
-    '                result = getattr(instance, m[0])(*m[1:])\n' +
-    '        elif ' + clsCheck + ':\n' +
-    '            result = instance\n' +
+    '        if ' + clsCheck + ':\n' +
+    '            instance = ' + fn + '(*tc["input"])\n' +
+    '            if tc.get("methods"):\n' +
+    '                result = instance\n' +
+    '                for m in tc["methods"]:\n' +
+    '                    result = getattr(instance, m[0])(*m[1:])\n' +
+    '            else:\n' +
+    '                result = instance\n' +
     '        else:\n' +
     '            result = ' + fn + '(*tc["input"])\n' +
     '        passed = True if ' + clsCheck + ' and not tc.get("methods") else json.dumps(result, default=str) == json.dumps(tc["expected"], default=str)\n' +

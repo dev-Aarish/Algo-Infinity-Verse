@@ -527,14 +527,19 @@ html, body {
 
 /* Problem Description */
 .problem-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-bottom: 16px;
 }
 
 .problem-title {
   font-size: 1.15rem;
   font-weight: 700;
-  margin: 0 0 8px;
+  margin: 0;
   font-family: 'Space Grotesk', sans-serif;
+  overflow-wrap: break-word;
+  word-break: keep-all;
 }
 
 .problem-meta-row {

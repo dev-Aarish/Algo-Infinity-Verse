@@ -576,7 +576,7 @@ function renderTestResults(result) {
           </div>
           <div class="test-case-details">
             <div>Input: <code>${formatInput(tc.input)}</code></div>
-            <div>Expected: <code>${JSON.stringify(tc.expected || '')}</code></div>
+            <div>Expected: <code>${JSON.stringify(tc.expected !== undefined ? tc.expected : '')}</code></div>
             ${(r.ran || hasError) && r.passed !== undefined
               ? `<div class="test-case-actual error">Actual: <code>${actualStr || errorStr || 'N/A'}</code></div>`
               : ''}
