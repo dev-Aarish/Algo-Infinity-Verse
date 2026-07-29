@@ -293,7 +293,7 @@ const visualizers = [
     icon: 'fa-map',
     desc: 'Interactive 2D spatial index with range searches and nearest-neighbor (k-NN) queries.',
   },
-  
+
   {
     name: 'Heap Percolation Visualizer',
     path: '/pages/visualizers/heap-percolation-visualizer/heap-percolation-visualizer.html',
@@ -2044,6 +2044,83 @@ const visualizers = [
     icon: 'fa-bolt',
     desc: 'See how in-memory caching improves performance — set/get keys with TTL-based expiration and cache miss tracking.',
   },
+  {
+    name: 'Interactive Cryptography Playground',
+    path: '/pages/visualizers/cryptography-playground/cryptography-playground.html',
+    category: 'Security & Crypto',
+    icon: 'fa-lock',
+    desc: 'Experiment with classic and modern cryptographic primitives in an interactive playground.',
+  },
+  {
+    name: 'Gossip Protocol & phi-Accrual Detector',
+    path: '/pages/visualizers/gossip/gossip.html',
+    category: 'Distributed Systems',
+    icon: 'fa-network-wired',
+    desc: 'Simulate gossip protocol dissemination and phi-accrual failure detection across a cluster of nodes.',
+  },
+  {
+    name: 'Join Optimizer Visualizer',
+    path: '/pages/visualizers/join-optimizer/join-optimizer.html',
+    category: 'Systems & OS',
+    icon: 'fa-database',
+    desc: 'Explore database join order optimization, visualizing how a query planner estimates costs across join strategies.',
+  },
+  {
+    name: 'Maze & Pathfinding Arena',
+    path: '/pages/visualizers/maze-pathfinding-arena/maze-pathfinding-arena.html',
+    category: 'Graph Algorithms',
+    icon: 'fa-border-all',
+    desc: 'Race pathfinding algorithms head-to-head through generated mazes and compare their exploration strategies.',
+  },
+  {
+    name: 'CPU Pipeline & Branch Predictor',
+    path: '/pages/visualizers/pipeline/pipeline.html',
+    category: 'Systems & OS',
+    icon: 'fa-microchip',
+    desc: 'Visualize CPU instruction pipelining and branch prediction, showing stalls, hazards, and speculative execution.',
+  },
+  {
+    name: 'Prefix Sum & Difference Array Playground',
+    path: '/pages/visualizers/prefix-diff-playground/prefix-diff-playground.html',
+    category: 'Dynamic Programming',
+    icon: 'fa-calculator',
+    desc: 'Build prefix sums, answer range queries in O(1), and practice difference-array range updates.',
+  },
+  {
+    name: 'Vector Clocks Simulator',
+    path: '/pages/visualizers/vector-clocks-simulator/vector-clocks-simulator.html',
+    category: 'Distributed Systems',
+    icon: 'fa-clock',
+    desc: 'Visualize causality and logical time across distributed nodes using Vector Clocks.',
+  },
+  {
+    name: 'Virtual Memory & Paging Visualizer',
+    path: '/pages/visualizers/virtual-memory/index.html',
+    category: 'Systems & OS',
+    icon: 'fa-memory',
+    desc: 'Visualize virtual memory paging, showing address translation, page tables, and page fault handling.',
+  },
+  {
+    name: 'Fast Fourier Transform (FFT) Visualizer',
+    path: '/pages/visualizer/fft-visualizer/fft-visualizer.html',
+    category: 'Math & Geometry',
+    icon: 'fa-wave-square',
+    desc: 'Interactive Digital Signal Processing lab. Draw waveforms and visualize the Cooley-Tukey FFT algorithm.',
+  },
+  {
+    name: 'WebXR AR Data Structure Visualizer',
+    path: '/ar-visualizer/index.html',
+    category: 'Special',
+    icon: 'fa-cube',
+    desc: 'View data structures rendered in augmented reality directly in your browser via WebXR.',
+  },
+  {
+    name: 'Microservices Architecture Visualizer',
+    path: '/pages/visualizers/microservices-visualizer/microservices-visualizer.html',
+    category: 'Systems & OS',
+    icon: 'fa-server',
+    desc: 'Simulate a microservices architecture — refresh, scale, and inject failures across services and watch health status update live.',
+  },
 ];
 
 /* ─── Categories ─── */
@@ -2215,8 +2292,7 @@ function render() {
   const start = (vizCurrentPage - 1) * PAGE_SIZE;
   const pageItems = filtered.slice(start, start + PAGE_SIZE);
 
-  // Build HTML — insert a category section header before the first card of
-  // each new category when viewing all.
+  // Build HTML
   let lastCategory = '';
   let animIndex = 0;
   const cardHtml = pageItems
@@ -2228,7 +2304,7 @@ function render() {
         </div>`;
         lastCategory = v.category;
       }
-      html += `<a href="${v.path}" target="_blank" rel="noopener noreferrer" class="viz-card" role="listitem" style="animation-delay:${reducedMotion ? '0s' : Math.min(animIndex * 0.025, 0.8)}s">
+      html += `<a href="${v.path}" target="_blank" rel="noopener noreferrer" class="viz-card lazy-card" role="listitem" data-delay="${reducedMotion ? '0s' : Math.min(animIndex * 0.025, 0.8)}s">
       <span class="viz-card-icon" style="color:${categoryColors[v.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')] || 'var(--viz-cyan)'}"><i class="fas ${v.icon}"></i></span>
       <span class="viz-card-title">${escHtml(v.name)}</span>
       <span class="viz-card-desc">${escHtml(v.desc)}</span>
@@ -2243,6 +2319,33 @@ function render() {
     .join('');
 
   grid.innerHTML = cardHtml;
+
+  // Initialize IntersectionObserver for lazy loading
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const card = entry.target;
+            card.style.animationDelay = card.dataset.delay || '0s';
+            card.classList.add('visible');
+            obs.unobserve(card);
+          }
+        });
+      },
+      { rootMargin: '50px' }
+    );
+
+    grid.querySelectorAll('.lazy-card').forEach((card) => {
+      observer.observe(card);
+    });
+  } else {
+    // Fallback for older browsers
+    grid.querySelectorAll('.lazy-card').forEach((card) => {
+      card.style.animationDelay = card.dataset.delay || '0s';
+      card.classList.add('visible');
+    });
+  }
 
   renderPagination(filtered.length, totalPages);
 }
