@@ -2956,6 +2956,8 @@ function resolveStaticPath(pathname) {
     '/rust-learning.html': 'pages/rust-academy/rust-academy.html',
     '/rust-academy': 'pages/rust-academy/rust-academy.html',
     '/rust-academy.html': 'pages/rust-academy/rust-academy.html',
+    '/terraform-academy': 'pages/terraform-academy/terraform-academy.html',
+    '/terraform-academy.html': 'pages/terraform-academy/terraform-academy.html',
     '/python-learning': 'pages/learning/python-learning/python-learning.html',
     '/javascript-learning': 'pages/learning/javascript-learning/javascript-learning.html',
     '/dbms-learning': 'pages/learning/dbms-learning/dbms-learning.html',
